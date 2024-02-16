@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
   `username` varchar(100),
   `email` varchar(50),
   `password` varchar(100),
-  `created_at` timestamp,
-  `updated_at` timestamp
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- create allowed_pets table
@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS posts (
   `user_id` integer,
   `pet_id` integer,
   `title` longtext,
-  `created_at` timestamp,
-  `updated_at` timestamp,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    FOREIGN KEY (user_id) REFERENCES users(id),
    FOREIGN KEY (pet_id) REFERENCES pets(id)
 );
@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS comments (
   user_id integer,
   post_id integer,
   `content` longtext,
-  `created_at` timestamp,
-  `updated_at` timestamp,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    FOREIGN KEY (user_id) REFERENCES users(id),
    FOREIGN KEY (post_id) REFERENCES posts(id)
 );
@@ -77,6 +77,8 @@ CREATE TABLE IF NOT EXISTS friendships (
   `user_id` integer,
   `friend_id` integer,
   `status` enum('pending','accepted'),
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    FOREIGN KEY (user_id) REFERENCES users(id),
    FOREIGN KEY (friend_id) REFERENCES users(id)
 );
