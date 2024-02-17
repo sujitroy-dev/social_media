@@ -53,10 +53,9 @@ export const getUserById = async (req, res) => {
 // Create new user
 export const createUser = async (req, res) => {
   let { first_name, last_name, username, email, password } = req.body;
-  password = hashPassword(password);
+  password = await hashPassword(password);
 
-  const query = `INSERT INTO user (first_name, last_name, username, email, password)
-  VALUES (?, ?, ?, ?, ?)`;
+  const query = `INSERT INTO user (first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?)`;
 
   try {
     const result = await pool.query(query, [
@@ -66,8 +65,15 @@ export const createUser = async (req, res) => {
       email,
       password,
     ]);
-    console.log(result);
-    res.send(result ?? "failed");
+    res.send(
+      {
+        id: result?.[0].insertId,
+        first_name,
+        last_name,
+        username,
+        email,
+      } || "failed"
+    );
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -81,7 +87,7 @@ export const udpateUserById = async (req, res) => {
   const updateUser = {};
 
   if (password) {
-    updateUser.password_hash = await hashPassword(password);
+    updateUser.password = await hashPassword(password);
   }
   if (username) {
     updateUser.username = username;
@@ -100,8 +106,11 @@ export const udpateUserById = async (req, res) => {
     const query = `UPDATE user SET ? WHERE id = ?`;
     const [rows] = await pool.query(query, [updateUser, id]);
 
-    console.log(rows);
-    res.send("success");
+    if (rows.affectedRows === 1) {
+      delete updateUser.password;
+      return res.send(updateUser);
+    }
+    throw Error({ message: "Failed to update" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
