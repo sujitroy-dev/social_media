@@ -4,7 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const options = {
-  swaggerDefinition: {
+  definition: {
+    openapi: "3.0.0",
     info: {
       title: "PetPals",
       version: "1.0.0",
