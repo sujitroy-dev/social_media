@@ -4,10 +4,10 @@ use `PetPals`
 -- create user table
 CREATE TABLE IF NOT EXISTS user (
   `id` integer auto_increment primary key,
-  `username` varchar(100),
+  `email` varchar(50) primary key,
+  `username` varchar(100) primary key,
   `first_name` varchar(100),
   `last_name` varchar(100),
-  `email` varchar(50),
   `password` varchar(100),
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
