@@ -14,6 +14,7 @@ const options = {
     servers: [
       {
         url: process.env.API_BASE_URL,
+        description: "Development server",
       },
     ],
     basePath: "/",
