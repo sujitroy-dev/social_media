@@ -13,7 +13,7 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${process.env.PORT}`,
+        url: process.env.API_BASE_URL,
       },
     ],
     basePath: "/",
