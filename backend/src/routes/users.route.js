@@ -4,6 +4,7 @@ import {
   createUser,
   getAllUsers,
   getUserById,
+  udpateUserById,
 } from "../controllers/users.controller.js";
 
 /**
@@ -39,10 +40,6 @@ import {
  *           type: string
  *           description: email id of the user
  *           example: elonmask@spacex.com
- *         password:
- *           type: string
- *           description: password of the user
- *           example: test-password
  *         created_at:
  *           type: date-time
  *           description: created_at of the user
@@ -81,7 +78,8 @@ import {
  * /users:
  *   get:
  *     tags: [Users]
- *     description: Get all users
+ *     summary: Get all users with pagination
+ *     description: Get all users with pagination
  *     parameters:
  *       - name: page
  *         in: query
@@ -118,6 +116,7 @@ router.get("/", getAllUsers);
  * /users/{id}:
  *   get:
  *     tags: [Users]
+ *     summary: Get user by id
  *     description: Get user by id
  *     parameters:
  *       - in: path
@@ -141,7 +140,117 @@ router.get("/", getAllUsers);
  *               $ref: '#/components/schemas/Error'
  */
 router.get("/:id", getUserById);
+
+/**
+ * @swagger
+ * /users/create:
+ *   post:
+ *     tags: [Users]
+ *     summary: Create a new user
+ *     description: Create a new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 first_name:
+ *                   type: string
+ *                   example: Elon
+ *                 last_name:
+ *                   type: string
+ *                   example: Mask
+ *                 username:
+ *                   type: string
+ *                   example: elonmask
+ *                 email:
+ *                   type: string
+ *                   example: elonmask@spacex.com
+ *                 password:
+ *                   type: string
+ *                   example: test-password
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 first_name:
+ *                   type: string
+ *                 last_name:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/create", createUser);
-// router.patch("/update/:id", userController.updateUser);
+
+/**
+ * @swagger
+ * /users/update/{id}:
+ *   patch:
+ *     tags: [Users]
+ *     summary: Update user details by id
+ *     description: Update user details by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: Users unique id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 first_name:
+ *                   type: string
+ *                   example: Elon-udpate
+ *                 last_name:
+ *                   type: string
+ *                   example: Mask-udpate
+ *                 username:
+ *                   type: string
+ *                   example: elonmask-udpate
+ *                 email:
+ *                   type: string
+ *                   example: update.elonmask@spacex.com
+ *                 password:
+ *                   type: string
+ *                   example: test-password-udpate
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 first_name:
+ *                   type: string
+ *                 last_name:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.patch("/update/:id", udpateUserById);
 
 export default router;
