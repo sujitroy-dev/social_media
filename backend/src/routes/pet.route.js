@@ -1,5 +1,9 @@
 import express from "express";
-import { createPet } from "../controllers/pet.controller.js";
+import {
+  createPet,
+  getPetsByUser,
+  updatePet,
+} from "../controllers/pet.controller.js";
 const router = express.Router();
 
 /**
@@ -115,5 +119,76 @@ const router = express.Router();
  *               $ref: '#/components/schemas/ServerError'
  */
 router.post("/create", createPet);
+
+/**
+ * @swagger
+ * /pet/update/{id}:
+ *   patch:
+ *     tags: [Pets]
+ *     summary: Update pet details by id
+ *     description: Update pet details by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: Pets unique id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 user_id:
+ *                   type: integer
+ *                 name:
+ *                   type: string
+ *                 breed:
+ *                   type: string
+ *                 type:
+ *                   type: string
+ *                 dob:
+ *                   type: string
+ *                 about:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Updated successfully
+ *                 updatedData:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     user_id:
+ *                       type: integer
+ *                     name:
+ *                       type: string
+ *                     breed:
+ *                       type: string
+ *                     type:
+ *                       type: string
+ *                     dob:
+ *                       type: string
+ *                     about:
+ *                       type: string
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerError'
+ */
+router.patch("/update/:id", updatePet);
+
+router.get("/view-all/:id", getPetsByUser);
 
 export default router;
