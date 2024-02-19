@@ -125,27 +125,36 @@ export const login = async (req, res) => {
   FROM user
   WHERE email = ? OR username = ?`;
 
-  const [row] = await pool.query(SEARCH_QUERY, [identifier, identifier]);
-  const { password: hashPassword } = row?.[0];
+  try {
+    const [row] = await pool.query(SEARCH_QUERY, [identifier, identifier]);
+    const { password: hashPassword } = row?.[0];
 
-  const isPasswordValid = await comparePassword(password, hashPassword);
+    const isPasswordValid = await comparePassword(password, hashPassword);
 
-  if (!isPasswordValid) {
-    return res.send({ message: "Invalid email or password" });
+    if (!isPasswordValid) {
+      return res.send({ message: "Invalid email or password" });
+    }
+    const userDetails = row[0];
+
+    const token = await jwt.sign(
+      {
+        email: userDetails.email,
+        username: userDetails.username,
+        role: "user",
+      },
+      process.env.SECRET_KEY,
+      { expiresIn: "365d" }
+    );
+
+    return res.status(200).json({
+      messgae: "Logged-in successfully",
+      email: userDetails.email,
+      username: userDetails.username,
+      profilePicture: userDetails.profilePicture,
+      token,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: error.message });
   }
-  const userDetails = row[0];
-
-  const token = await jwt.sign(
-    { email: userDetails.email, username: userDetails.username, role: "user" },
-    process.env.SECRET_KEY,
-    { expiresIn: "365d" }
-  );
-
-  return res.status(200).json({
-    messgae: "Logged-in successfully",
-    email: userDetails.email,
-    username: userDetails.username,
-    profilePicture: userDetails.profilePicture,
-    token,
-  });
 };
