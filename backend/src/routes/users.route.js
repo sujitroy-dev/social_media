@@ -12,6 +12,21 @@ import {
  * @swagger
  * components:
  *   schemas:
+ *     ServerError:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           example: Internal Server Error
+ *           description: Error message
+ *       required:
+ *         - message
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
  *     User:
  *       type: object
  *       required:
@@ -49,21 +64,6 @@ import {
  *           type: date-time
  *           description: updated_at of the user
  *           example: 2024-02-17T14:30:00Z
- */
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     Error:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *           example: Internal Server Error
- *           description: Error message
- *       required:
- *         - message
  */
 
 /**
@@ -108,7 +108,7 @@ import {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/ServerError'
  */
 router.get("/", getAllUsers);
 
@@ -138,7 +138,7 @@ router.get("/", getAllUsers);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/ServerError'
  */
 router.get("/:id", getUserById);
 
@@ -192,7 +192,7 @@ router.get("/:id", getUserById);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/ServerError'
  */
 router.post("/register", registerUser);
 
@@ -253,7 +253,7 @@ router.post("/register", registerUser);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/ServerError'
  */
 router.patch("/update/:id", udpateUserById);
 
@@ -302,7 +302,7 @@ router.patch("/update/:id", udpateUserById);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/ServerError'
  */
 router.post("/login", login);
 
