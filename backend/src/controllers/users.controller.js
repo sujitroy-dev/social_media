@@ -1,5 +1,6 @@
 import pool from "../config/database.js";
-import { hashPassword } from "../helper/authHelper.js";
+import { comparePassword, hashPassword } from "../helper/authHelper.js";
+import jwt from "jsonwebtoken";
 
 // Get all users
 export const getAllUsers = async (req, res) => {
@@ -50,36 +51,6 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// Create new user
-export const createUser = async (req, res) => {
-  let { first_name, last_name, username, email, password } = req.body;
-  password = await hashPassword(password);
-
-  const query = `INSERT INTO user (first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?)`;
-
-  try {
-    const result = await pool.query(query, [
-      first_name,
-      last_name,
-      username,
-      email,
-      password,
-    ]);
-    res.send(
-      {
-        id: result?.[0].insertId,
-        first_name,
-        last_name,
-        username,
-        email,
-      } || "failed"
-    );
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
 // Update user by id
 export const udpateUserById = async (req, res) => {
   const id = req.params.id;
@@ -108,11 +79,73 @@ export const udpateUserById = async (req, res) => {
 
     if (rows.affectedRows === 1) {
       delete updateUser.password;
-      return res.send(updateUser);
+      return res.send({ ...updateUser, message: "Updated successfully" });
     }
     throw Error({ message: "Failed to update" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
+};
+
+// Register new user
+export const registerUser = async (req, res) => {
+  let { first_name, last_name, username, email, password } = req.body;
+  password = await hashPassword(password);
+
+  const query = `INSERT INTO user (first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?)`;
+
+  try {
+    const result = await pool.query(query, [
+      first_name,
+      last_name,
+      username,
+      email,
+      password,
+    ]);
+    res.send(
+      {
+        id: result?.[0].insertId,
+        first_name,
+        last_name,
+        username,
+        email,
+      } || "failed"
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const login = async (req, res) => {
+  const { identifier, password } = req.body;
+
+  const SEARCH_QUERY = `SELECT *
+  FROM user
+  WHERE email = ? OR username = ?`;
+
+  const [row] = await pool.query(SEARCH_QUERY, [identifier, identifier]);
+  const { password: hashPassword } = row?.[0];
+
+  const isPasswordValid = await comparePassword(password, hashPassword);
+
+  if (!isPasswordValid) {
+    return res.send({ message: "Invalid email or password" });
+  }
+  const userDetails = row[0];
+
+  const token = await jwt.sign(
+    { email: userDetails.email, username: userDetails.username, role: "user" },
+    process.env.SECRET_KEY,
+    { expiresIn: "365d" }
+  );
+
+  return res.status(200).json({
+    messgae: "Logged-in successfully",
+    email: userDetails.email,
+    username: userDetails.username,
+    profilePicture: userDetails.profilePicture,
+    token,
+  });
 };

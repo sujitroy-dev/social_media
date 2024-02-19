@@ -1,7 +1,8 @@
 import express from "express";
 const router = express.Router();
 import {
-  createUser,
+  registerUser,
+  login,
   getAllUsers,
   getUserById,
   udpateUserById,
@@ -143,11 +144,11 @@ router.get("/:id", getUserById);
 
 /**
  * @swagger
- * /users/create:
+ * /users/register:
  *   post:
  *     tags: [Users]
- *     summary: Create a new user
- *     description: Create a new user
+ *     summary: Register a new user
+ *     description: Register a new user
  *     requestBody:
  *       required: true
  *       content:
@@ -193,7 +194,7 @@ router.get("/:id", getUserById);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post("/create", createUser);
+router.post("/register", registerUser);
 
 /**
  * @swagger
@@ -236,6 +237,9 @@ router.post("/create", createUser);
  *             schema:
  *               type: object
  *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Updated successfully
  *                 first_name:
  *                   type: string
  *                 last_name:
@@ -252,5 +256,54 @@ router.post("/create", createUser);
  *               $ref: '#/components/schemas/Error'
  */
 router.patch("/update/:id", udpateUserById);
+
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     tags: [Users]
+ *     summary: Login with emai/username and password
+ *     description: Login with emai/username and password
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *               - identifier
+ *             properties:
+ *               identifier:
+ *                 type: string
+ *                 example: elonmask
+ *               password:
+ *                 type: string
+ *                 example: test-password
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Logged-in successfully
+ *                 token:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post("/login", login);
 
 export default router;
