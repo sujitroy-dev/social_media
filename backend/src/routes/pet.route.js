@@ -2,6 +2,7 @@ import express from "express";
 import {
   createPet,
   deletePet,
+  getPetById,
   getPetsByUser,
   updatePet,
 } from "../controllers/pet.controller.js";
@@ -207,7 +208,9 @@ router.patch("/update/:id", updatePet);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Pet'
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Pet'
  *       500:
  *         description: Server Error
  *         content:
@@ -215,8 +218,44 @@ router.patch("/update/:id", updatePet);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-
 router.get("/view-all/:id", getPetsByUser);
+
+/**
+ * @swagger
+ * /pet/view/{id}:
+ *   get:
+ *     tags: [Pets]
+ *     summary: View pet details by id
+ *     description: View pet details by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: Pets unique id
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Pet'
+ *       404:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Not found
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerError'
+ */
+router.get("/view/:id", getPetById);
 
 /**
  * @swagger

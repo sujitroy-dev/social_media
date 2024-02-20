@@ -19,6 +19,12 @@ export const getPetsByUser = async (req, res) => {
 
 export const getPetById = async (req, res) => {
   try {
+    const petID = parseInt(req.params.id);
+    const GET_QUERY = `SELECT * FROM pet WHERE id = ?`;
+    const [raws] = await pool.query(GET_QUERY, petID);
+
+    Array.isArray(raws) && raws.length > 0 && res.status(200).send(raws[0]);
+    return res.send({ message: "Not found" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: error.message });
