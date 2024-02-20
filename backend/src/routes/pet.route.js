@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createPet,
+  deletePet,
   getPetsByUser,
   updatePet,
 } from "../controllers/pet.controller.js";
@@ -189,6 +190,63 @@ router.post("/create", createPet);
  */
 router.patch("/update/:id", updatePet);
 
+/**
+ * @swagger
+ * /pet/view-all/{id}:
+ *   get:
+ *     tags: [Pets]
+ *     summary: View all pet details by user id
+ *     description: View all pet details by user id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: User unique id
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Pet'
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerError'
+ */
+
 router.get("/view-all/:id", getPetsByUser);
+
+/**
+ * @swagger
+ * /pet/remove/{id}:
+ *   delete:
+ *     tags: [Pets]
+ *     summary: Update pet details by id
+ *     description: Update pet details by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: Pets unique id
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Removed successfully
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerError'
+ */
+router.delete("/remove/:id", deletePet);
 
 export default router;

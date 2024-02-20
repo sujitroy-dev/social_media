@@ -84,6 +84,15 @@ export const updatePet = async (req, res) => {
 
 export const deletePet = async (req, res) => {
   try {
+    const petID = parseInt(req.params.id);
+    const DELETE_QUERY = `DELETE FROM pet WHERE id = ?`;
+
+    const [response] = await pool.query(DELETE_QUERY, petID);
+
+    if (response.affectedRows > 0) {
+      return res.status(200).send({ message: "Removed successfully" });
+    }
+    return res.send({ message: "Failed to update, Invalid id" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: error.message });
