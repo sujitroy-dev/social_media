@@ -51,12 +51,10 @@ CREATE TABLE IF NOT EXISTS pet (
 -- -- create post table
 CREATE TABLE IF NOT EXISTS post (
   `id` integer auto_increment primary key,
-  `user_id` integer,
   `pet_id` integer,
   `title` longtext,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-   FOREIGN KEY (user_id) REFERENCES user(id),
    FOREIGN KEY (pet_id) REFERENCES pet(id)
 );
 
