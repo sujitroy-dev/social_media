@@ -39,3 +39,28 @@ export const newPost = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const updatePost = async (req, res) => {
+  try {
+    const { title } = req.body;
+    const postID = req.params.id;
+    const updateData = { title };
+    const UPDATE_POST_QUERY = `UPDATE post SET ? WHERE id = ?`;
+
+    const [response] = await pool.query(UPDATE_POST_QUERY, [
+      updateData,
+      postID,
+    ]);
+
+    if (response.affectedRows > 0) {
+      res.status(201).json({ message: "Updated successfully" });
+    }
+
+    res.status(400).json({ message: "Failed to update" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deletePost = async (req, res) => {};
