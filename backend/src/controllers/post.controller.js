@@ -46,11 +46,15 @@ export const updatePost = async (req, res) => {
     const postID = req.params.id;
     const updateData = { title };
     const UPDATE_POST_QUERY = `UPDATE post SET ? WHERE id = ?`;
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
 
-    const [response] = await pool.query(UPDATE_POST_QUERY, [
+    const [response] = await connection.query(UPDATE_POST_QUERY, [
       updateData,
       postID,
     ]);
+    await connection.commit();
+    connection.release();
 
     if (response.affectedRows > 0) {
       res.status(201).json({ message: "Updated successfully" });
@@ -63,4 +67,40 @@ export const updatePost = async (req, res) => {
   }
 };
 
-export const deletePost = async (req, res) => {};
+export const getPost = async (req, res) => {
+  try {
+    const postID = req.params.id;
+
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const GET_POST_QUERY = `SELECT
+      p.id AS post_id,
+      p.pet_id,
+      p.title,
+      JSON_ARRAYAGG(pa.url) AS asset_urls,
+      pet.name AS pet_name,
+      pet.profile_picture AS pet_profile_pic,
+      p.created_at,
+      p.updated_at
+    FROM post p
+      LEFT JOIN post_asset pa ON pa.post_id = p.id
+      LEFT JOIN pet ON pet.id = p.pet_id
+    WHERE p.id = ?`;
+
+    const [result] = await connection.query(GET_POST_QUERY, postID);
+
+    console.log(result);
+
+    if (Array.isArray(result) && result.length > 0) res.send(result[0]);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  const postId = req.params.id;
+  const DELETE_POST_QUERY = `DELETE FROM post WHERE id = 10`;
+  const DELETE_POST_ASSET_QUERY = `DELETE FROM post_asset WHERE post_id = 10`;
+};

@@ -1,5 +1,9 @@
 import express from "express";
-import { newPost, updatePost } from "../controllers/post.controller.js";
+import {
+  getPost,
+  newPost,
+  updatePost,
+} from "../controllers/post.controller.js";
 const router = express.Router();
 
 /**
@@ -126,5 +130,59 @@ router.post("/create", newPost);
  *               $ref: '#/components/schemas/ServerError'
  */
 router.patch("/update/:id", updatePost);
+
+/**
+ * @swagger
+ * /post/{id}:
+ *   get:
+ *     tags: [Post]
+ *     summary: get post and post assets.
+ *     description: Get post and post assets.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: Post unique id
+ *         type: integer
+ *         example: 10
+ *     responses:
+ *       '200':
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type:
+ *               properties:
+ *                 post_id:
+ *                   type: integer
+ *                   example: 5
+ *                 pet_id:
+ *                   type: integer
+ *                   example: 2
+ *                 title:
+ *                   type: string
+ *                 asset_urls:
+ *                   type: array
+ *                   items:
+ *                     data: string
+ *                 pet_name:
+ *                   type: string
+ *                 pet_profile_pic:
+ *                   type: string
+ *                 created_at:
+ *                   type: date-time
+ *                   description: created_at of the user
+ *                   example: 2024-02-17T14:30:00Z
+ *                 updated_at:
+ *                   type: date-time
+ *                   description: updated_at of the user
+ *                   example: 2024-02-17T14:30:00Z
+ *       '500':
+ *         description: Internal server error. Failed to create a post.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerError'
+ */
+router.get("/:id", getPost);
 
 export default router;
