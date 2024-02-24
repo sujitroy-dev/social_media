@@ -4,41 +4,63 @@ import jwt from "jsonwebtoken";
 
 // Get all users
 export const getAllUsers = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const count = parseInt(req.query.count) || 10;
+  const page = req.query.page || 1;
+  const count = req.query.count || 10;
   const offset = (page - 1) * count;
 
+  let connection;
   try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const GET_USER_QUERY = `SELECT id, username, email, created_at, updated_at
+    FROM user
+    LIMIT ?
+    OFFSET ?`;
+    const GET_USER_COUNT = `SELECT COUNT(*) AS totalCount FROM user`;
+
     const [users, totalCountResult] = await Promise.all([
-      pool.query(
-        `SELECT id, username, email, created_at, updated_at
-        FROM user
-        LIMIT ?
-        OFFSET ?`,
-        [count, offset]
-      ),
-      pool.query(`SELECT COUNT(*) AS totalCount
-      FROM user`),
+      connection.query(GET_USER_QUERY, [count, offset]),
+      connection.query(GET_USER_COUNT),
     ]);
 
-    const totalCount = totalCountResult[0].totalCount;
+    connection.commit();
+
+    const resultCount = users[0].length;
+    const totalCount = totalCountResult[0][0].totalCount;
 
     res.status(200).json({
       users: users[0],
-      resultCount: users[0].length,
-      totalCount: totalCountResult[0][0].totalCount,
+      resultCount,
+      totalCount,
     });
   } catch (err) {
+    if (connection) {
+      await connection.rollback();
+    }
     console.error("Error fetching users:", err);
     res.status(500).json({ error: "Internal server error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
 // Get user by id
 export const getUserById = async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
+  let connection;
   try {
-    const [rows] = await pool.query(`SELECT * FROM user WHERE id = ?`, id);
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const [rows] = await connection.query(
+      `SELECT * FROM user WHERE id = ?`,
+      id
+    );
+
+    await connection.commit();
 
     if (Array.isArray(rows) && rows.length > 0) {
       res.status(200).json(rows?.[0]);
@@ -46,8 +68,15 @@ export const getUserById = async (req, res) => {
     }
     res.status(404).json({ message: "Not Found" });
   } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
@@ -55,6 +84,7 @@ export const getUserById = async (req, res) => {
 export const udpateUserById = async (req, res) => {
   const id = req.params.id;
   const { username, email, password, first_name, last_name } = req.body;
+  let connection;
   const updateUser = {};
 
   if (password) {
@@ -74,8 +104,13 @@ export const udpateUserById = async (req, res) => {
   }
 
   try {
+    connection = await pool.getConnection();
+    connection.beginTransaction();
+
     const query = `UPDATE user SET ? WHERE id = ?`;
-    const [rows] = await pool.query(query, [updateUser, id]);
+    const [rows] = await connection.query(query, [updateUser, id]);
+
+    connection.commit();
 
     if (rows.affectedRows === 1) {
       delete updateUser.password;
@@ -83,8 +118,15 @@ export const udpateUserById = async (req, res) => {
     }
     throw Error({ message: "Failed to update" });
   } catch (error) {
+    if (connection) {
+      connection.rollback();
+    }
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
@@ -92,11 +134,14 @@ export const udpateUserById = async (req, res) => {
 export const registerUser = async (req, res) => {
   let { first_name, last_name, username, email, password } = req.body;
   password = await hashPassword(password);
-
-  const query = `INSERT INTO user (first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?)`;
+  let connection;
 
   try {
-    const result = await pool.query(query, [
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const query = `INSERT INTO user (first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?)`;
+    const result = await connection.query(query, [
       first_name,
       last_name,
       username,
@@ -113,20 +158,32 @@ export const registerUser = async (req, res) => {
       } || "failed"
     );
   } catch (error) {
+    if (connection) {
+      connection.rollback();
+    }
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
 export const login = async (req, res) => {
   const { identifier, password } = req.body;
-
-  const SEARCH_QUERY = `SELECT *
-  FROM user
-  WHERE email = ? OR username = ?`;
+  let connection;
 
   try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const SEARCH_QUERY = `SELECT *
+    FROM user
+    WHERE email = ? OR username = ?`;
     const [row] = await pool.query(SEARCH_QUERY, [identifier, identifier]);
+    await connection.commit();
+
     const { password: hashPassword } = row?.[0];
 
     const isPasswordValid = await comparePassword(password, hashPassword);
@@ -154,7 +211,14 @@ export const login = async (req, res) => {
       token,
     });
   } catch (error) {
+    if (connection) {
+      connection.rollback();
+    }
     console.error(error);
     return res.status(500).json({ message: error.message });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
