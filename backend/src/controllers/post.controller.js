@@ -41,12 +41,13 @@ export const newPost = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
+  let connection;
   try {
     const { title } = req.body;
     const postID = req.params.id;
     const updateData = { title };
     const UPDATE_POST_QUERY = `UPDATE post SET ? WHERE id = ?`;
-    const connection = await pool.getConnection();
+    connection = await pool.getConnection();
     await connection.beginTransaction();
 
     const [response] = await connection.query(UPDATE_POST_QUERY, [
@@ -64,14 +65,19 @@ export const updatePost = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
 export const getPost = async (req, res) => {
+  let connection;
   try {
     const postID = req.params.id;
 
-    const connection = await pool.getConnection();
+    connection = await pool.getConnection();
     await connection.beginTransaction();
 
     const GET_POST_QUERY = `SELECT
@@ -96,11 +102,36 @@ export const getPost = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
 export const deletePost = async (req, res) => {
   const postId = req.params.id;
-  const DELETE_POST_QUERY = `DELETE FROM post WHERE id = 10`;
-  const DELETE_POST_ASSET_QUERY = `DELETE FROM post_asset WHERE post_id = 10`;
+  const DELETE_POST_QUERY = `DELETE FROM post WHERE id = ?`;
+  const DELETE_POST_ASSET_QUERY = `DELETE FROM post_asset WHERE post_id = ?`;
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const deletePostRes = await connection.query(DELETE_POST_QUERY, postId);
+    const deleteAssetRes = await connection.query(
+      DELETE_POST_ASSET_QUERY,
+      postId
+    );
+
+    console.log({ deletePostRes, deleteAssetRes });
+    res.send({ deletePostRes, deleteAssetRes });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
 };
