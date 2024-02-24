@@ -1,15 +1,19 @@
 import pool from "../config/database.js";
 
 export const newPost = async (req, res) => {
+  const { pet_id, title, data } = req.body;
+  let connection;
   try {
-    const { pet_id, title, data } = req.body;
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
     const CREATE_NEW_POST_QUERY = `INSERT INTO post (pet_id, title)
     VALUES (?, ?)`;
 
-    const [CREATE_POST_RESPONSE] = await pool.query(CREATE_NEW_POST_QUERY, [
-      pet_id,
-      title,
-    ]);
+    const [CREATE_POST_RESPONSE] = await connection.query(
+      CREATE_NEW_POST_QUERY,
+      [pet_id, title]
+    );
     if (CREATE_POST_RESPONSE.affectedRows == 0) {
       return res.json({ message: "Failed to upload" });
     }
@@ -22,40 +26,47 @@ export const newPost = async (req, res) => {
       VALUES ?`;
 
       const values = await data.map((post) => [postID, post.url, post.type]);
-      await pool.query(ADD_POST_ASSETS_QUERY, [values]);
+      await connection.query(ADD_POST_ASSETS_QUERY, [values]);
 
-      const [rows] = await pool.query(
+      const [rows] = await connection.query(
         `SELECT id, url, type  FROM post_asset WHERE post_id = ?`,
         postID
       );
       assets = rows;
     }
+    await connection.commit();
     return res.status(201).json({
       message: "Post uploaded",
       data: { id: CREATE_POST_RESPONSE.insertId, pet_id, title, assets },
     });
   } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
 export const updatePost = async (req, res) => {
+  const { title } = req.body;
+  const postID = req.params.id;
+  const updateData = { title };
   let connection;
   try {
-    const { title } = req.body;
-    const postID = req.params.id;
-    const updateData = { title };
-    const UPDATE_POST_QUERY = `UPDATE post SET ? WHERE id = ?`;
     connection = await pool.getConnection();
     await connection.beginTransaction();
+    const UPDATE_POST_QUERY = `UPDATE post SET ? WHERE id = ?`;
 
     const [response] = await connection.query(UPDATE_POST_QUERY, [
       updateData,
       postID,
     ]);
     await connection.commit();
-    connection.release();
 
     if (response.affectedRows > 0) {
       res.status(201).json({ message: "Updated successfully" });
@@ -63,6 +74,9 @@ export const updatePost = async (req, res) => {
 
     res.status(400).json({ message: "Failed to update" });
   } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
   } finally {
@@ -95,11 +109,13 @@ export const getPost = async (req, res) => {
     WHERE p.id = ?`;
 
     const [result] = await connection.query(GET_POST_QUERY, postID);
-
-    console.log(result);
+    await connection.commit();
 
     if (Array.isArray(result) && result.length > 0) res.send(result[0]);
   } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
   } finally {
@@ -111,22 +127,23 @@ export const getPost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   const postId = req.params.id;
-  const DELETE_POST_QUERY = `DELETE FROM post WHERE id = ?`;
-  const DELETE_POST_ASSET_QUERY = `DELETE FROM post_asset WHERE post_id = ?`;
   let connection;
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const deletePostRes = await connection.query(DELETE_POST_QUERY, postId);
-    const deleteAssetRes = await connection.query(
-      DELETE_POST_ASSET_QUERY,
-      postId
-    );
+    const DELETE_POST_ASSET_QUERY = `DELETE FROM post_asset WHERE post_id = ?`;
+    const DELETE_POST_QUERY = `DELETE FROM post WHERE id = ?`;
 
-    console.log({ deletePostRes, deleteAssetRes });
-    res.send({ deletePostRes, deleteAssetRes });
+    await connection.query(DELETE_POST_ASSET_QUERY, postId);
+    await connection.query(DELETE_POST_QUERY, postId);
+
+    await connection.commit();
+    res.send({ message: "Deleted successfully" });
   } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
   } finally {
