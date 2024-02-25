@@ -152,3 +152,28 @@ export const deletePost = async (req, res) => {
     }
   }
 };
+
+export const deletePostAsset = async (req, res) => {
+  const assetId = req.params.assetId;
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const DELETE_ASSET_QUERY = `DELETE FROM post_asset WHERE id = ?`;
+    await connection.query(DELETE_ASSET_QUERY, assetId);
+    await connection.commit();
+
+    res.send({ message: "Deleted successfully" });
+  } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};

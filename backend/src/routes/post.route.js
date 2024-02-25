@@ -1,6 +1,7 @@
 import express from "express";
 import {
   deletePost,
+  deletePostAsset,
   getPost,
   newPost,
   updatePost,
@@ -218,5 +219,38 @@ router.get("/:id", getPost);
  *               $ref: '#/components/schemas/ServerError'
  */
 router.delete("/:id", deletePost);
+
+/**
+ * @swagger
+ * /post/asset/{id}:
+ *   delete:
+ *     tags: [Post]
+ *     summary: Delete post assets.
+ *     description: Delete post assets.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: Post_asset unique id
+ *         type: integer
+ *         example: 10
+ *     responses:
+ *       '200':
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type:
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Deleted successfully
+ *       '500':
+ *         description: Internal server error. Failed to create a post.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerError'
+ */
+router.delete("/asset/:assetId", deletePostAsset);
 
 export default router;
