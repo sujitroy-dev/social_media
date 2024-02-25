@@ -212,7 +212,7 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     if (connection) {
-      connection.rollback();
+      await connection.rollback();
     }
     console.error(error);
     return res.status(500).json({ message: error.message });
