@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS post_asset (
 
 -- create comment tables
 CREATE TABLE IF NOT EXISTS comment (
-  `id` integer auto_increment primary key,
+  `comment_id` integer auto_increment primary key,
   user_id integer,
   post_id integer,
   `content` longtext,

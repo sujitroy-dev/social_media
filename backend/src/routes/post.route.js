@@ -2,6 +2,7 @@ import express from "express";
 import {
   deletePost,
   deletePostAsset,
+  getFeedPosts,
   getPost,
   newPost,
   updatePost,
@@ -189,6 +190,71 @@ router.get("/:id", getPost);
 
 /**
  * @swagger
+ * /post:
+ *   get:
+ *     tags: [Post]
+ *     summary: Get feed posts and post assets with pagination.
+ *     description: Get feed posts and post assets with pagination.
+ *     parameters:
+ *       - in: query
+ *         name: count
+ *         description: Number of post
+ *         type: integer
+ *         example: 4
+ *       - in: query
+ *         name: page
+ *         description: Page number
+ *         type: integer
+ *         example: 1
+ *     responses:
+ *       '200':
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type:
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     properties:
+ *                       post_id:
+ *                         type: integer
+ *                         example: 5
+ *                       pet_id:
+ *                         type: integer
+ *                         example: 2
+ *                       title:
+ *                         type: string
+ *                       asset_urls:
+ *                         type: array
+ *                         items:
+ *                           data: string
+ *                       pet_name:
+ *                         type: string
+ *                       pet_profile_pic:
+ *                         type: string
+ *                       created_at:
+ *                         type: date-time
+ *                         description: post create time
+ *                         example: 2024-02-17T14:30:00Z
+ *                 resultCount:
+ *                   type: integer
+ *                   example: 4
+ *                 totalPostCount:
+ *                   type: integer
+ *                   example: 150
+ *       '500':
+ *         description: Internal server error. Failed to create a post.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerError'
+ */
+router.get("/", getFeedPosts);
+
+/**
+ * @swagger
  * /post/{id}:
  *   delete:
  *     tags: [Post]
@@ -234,7 +300,7 @@ router.delete("/:id", deletePost);
  *         type: integer
  *         example: 10
  *     responses:
- *       '200':
+ *       '202':
  *         description: Success.
  *         content:
  *           application/json:
@@ -244,6 +310,16 @@ router.delete("/:id", deletePost);
  *                 message:
  *                   type: string
  *                   example: Deleted successfully
+ *       '404':
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type:
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid ID
  *       '500':
  *         description: Internal server error. Failed to create a post.
  *         content:
