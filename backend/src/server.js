@@ -6,11 +6,13 @@ import usersRouter from "./routes/users.route.js";
 import petsRouter from "./routes/pet.route.js";
 import postRouter from "./routes/post.route.js";
 import commentRouter from "./routes/comment.route.js";
+import cookieParser from "cookie-parser";
 const app = express();
 
 dotenv.config();
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 // Serve Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
