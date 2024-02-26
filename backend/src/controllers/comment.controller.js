@@ -20,7 +20,7 @@ export const viewAllComments = async (req, res) => {
           c.updated_at
     FROM comment AS c
     LEFT JOIN user AS u ON u.id = c.user_id
-    WHERE c.post_id = ?
+    WHERE c.post_id = ? AND c.parent_comment_id IS NULL
     `;
     const [rows] = await connection.query(GET_POST_COMMENTS_QUERY, postID);
 

@@ -65,7 +65,9 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Comment'
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comment'
  *       '500':
  *         description: Internal server error. Failed to comment.
  *         content:

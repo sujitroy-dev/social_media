@@ -73,9 +73,10 @@ CREATE TABLE IF NOT EXISTS post_asset (
 
 -- create comment tables
 CREATE TABLE IF NOT EXISTS comment (
-  `comment_id` integer auto_increment primary key,
-  user_id integer,
-  post_id integer,
+  `comment_id` INTEGER auto_increment PRIMARY KEY,
+  `user_id` INTEGER NOT NULL,
+  `post_id` INTEGER NOT NULL,
+  `parent_comment_id` INTEGER,
   `content` longtext,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
