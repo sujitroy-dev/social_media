@@ -7,6 +7,7 @@ import {
   getUserById,
   udpateUserById,
 } from "../controllers/users.controller.js";
+import { authorize } from "../middleware/authorize.js";
 
 /**
  * @swagger
@@ -123,6 +124,7 @@ router.get("/", getAllUsers);
  *       - in: path
  *         name: id
  *         description: Get user details by id
+ *         required: true
  *         schema:
  *           type: integer
  *           minimum: 1
@@ -198,15 +200,11 @@ router.post("/register", registerUser);
 
 /**
  * @swagger
- * /users/update/{id}:
+ * /users/update-profile:
  *   patch:
  *     tags: [Users]
  *     summary: Update user details by id
  *     description: Update user details by id
- *     parameters:
- *       - in: path
- *         name: id
- *         description: Users unique id
  *     requestBody:
  *       required: true
  *       content:
@@ -255,7 +253,7 @@ router.post("/register", registerUser);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.patch("/update/:id", udpateUserById);
+router.patch("/update-profile", authorize, udpateUserById);
 
 /**
  * @swagger

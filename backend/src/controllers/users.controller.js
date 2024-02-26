@@ -56,7 +56,7 @@ export const getUserById = async (req, res) => {
     await connection.beginTransaction();
 
     const [rows] = await connection.query(
-      `SELECT * FROM user WHERE id = ?`,
+      `SELECT id, first_name, last_name, username, email, created_at, updated_at  FROM user WHERE id = ?`,
       id
     );
 
@@ -82,7 +82,7 @@ export const getUserById = async (req, res) => {
 
 // Update user by id
 export const udpateUserById = async (req, res) => {
-  const id = req.params.id;
+  const id = req.user.id;
   const { username, email, password, first_name, last_name } = req.body;
   let connection;
   const updateUser = {};
@@ -178,13 +178,13 @@ export const login = async (req, res) => {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const SEARCH_QUERY = `SELECT *
+    const SEARCH_QUERY = `SELECT id, username, email, password as hashPassword
     FROM user
     WHERE email = ? OR username = ?`;
     const [row] = await pool.query(SEARCH_QUERY, [identifier, identifier]);
     await connection.commit();
 
-    const { password: hashPassword } = row?.[0];
+    const { hashPassword } = row?.[0];
 
     const isPasswordValid = await comparePassword(password, hashPassword);
 
@@ -193,23 +193,30 @@ export const login = async (req, res) => {
     }
     const userDetails = row[0];
 
+    delete userDetails.hashPassword;
     const token = await jwt.sign(
       {
-        email: userDetails.email,
-        username: userDetails.username,
+        ...userDetails,
         role: "user",
       },
       process.env.SECRET_KEY,
       { expiresIn: "365d" }
     );
 
-    return res.status(200).json({
+    // Set cookie with the token
+    res.cookie("token", token, {
+      maxAge: 365 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: false, // Set to true if your app is served over HTTPS
+    });
+    res.status(200).json({
       messgae: "Logged-in successfully",
       email: userDetails.email,
       username: userDetails.username,
       profilePicture: userDetails.profilePicture,
       token,
     });
+    return;
   } catch (error) {
     if (connection) {
       await connection.rollback();
