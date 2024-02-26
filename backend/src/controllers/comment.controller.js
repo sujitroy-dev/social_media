@@ -68,5 +68,39 @@ export const newComment = async (req, res) => {
     connection.release();
   }
 };
-export const updateComment = async (req, res) => {};
+export const updateComment = async (req, res) => {
+  const { content } = req.body;
+  const updateData = { content };
+  const commentID = req.params.id;
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const UPDATE_COMMENT_QUERY = `
+    UPDATE comment SET ? WHERE comment_id = ?
+    `;
+    const [response] = await connection.query(UPDATE_COMMENT_QUERY, [
+      updateData,
+      commentID,
+    ]);
+
+    if (response.affectedRows > 0) {
+      res.status(201).json({ message: "Updated successfully" });
+    }
+
+    await connection.commit();
+    res.status(400).json({ message: "Failed to update" });
+  } catch (error) {
+    if (connection) {
+      connection.rollback();
+    }
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
 export const deleteComment = async (req, res) => {};

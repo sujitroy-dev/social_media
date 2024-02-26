@@ -1,6 +1,7 @@
 import express from "express";
 import {
   newComment,
+  updateComment,
   viewAllComments,
 } from "../controllers/comment.controller.js";
 const router = express.Router();
@@ -80,7 +81,7 @@ router.get("/all", viewAllComments);
 
 /**
  * @swagger
- * /comments/new:
+ * /comment/new:
  *   post:
  *     tags: [Comment]
  *     summary: Comment on a post.
@@ -118,5 +119,46 @@ router.get("/all", viewAllComments);
  */
 
 router.post("/new", newComment);
+
+/**
+ * @swagger
+ * /comment/update/{id}:
+ *   patch:
+ *     tags: [Comment]
+ *     summary: Update a existing comment.
+ *     description: Update comment record in the database.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: unique comment id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 description: new text content
+ *     responses:
+ *       '200':
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Updated successfully
+ *       '500':
+ *         description: Internal server error. Failed to update the comment.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerError'
+ */
+router.patch("/update/:id", updateComment);
 
 export default router;
