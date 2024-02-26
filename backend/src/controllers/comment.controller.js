@@ -90,7 +90,7 @@ export const updateComment = async (req, res) => {
     }
 
     await connection.commit();
-    res.status(400).json({ message: "Failed to update" });
+    res.status(400).json({ message: "Failed to update, Invalid Comment ID" });
   } catch (error) {
     if (connection) {
       connection.rollback();
@@ -103,4 +103,31 @@ export const updateComment = async (req, res) => {
     }
   }
 };
-export const deleteComment = async (req, res) => {};
+export const deleteComment = async (req, res) => {
+  const commentID = req.params.id;
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const DELETE_COMMENT_QUERY = `
+    DELETE FROM comment WHERE comment_id = ?
+    `;
+    const [response] = await connection.query(DELETE_COMMENT_QUERY, commentID);
+
+    if (response.affectedRows > 0) {
+      res.status(201).json({ message: "Deleted successfully" });
+      return;
+    }
+    res.status(400).json({ message: "Failed to update, Invalid Comment ID" });
+  } catch (error) {
+    if (connection) {
+      connection.rollback();
+    }
+    res.status(400).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};

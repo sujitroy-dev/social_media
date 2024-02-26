@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  deleteComment,
   newComment,
   updateComment,
   viewAllComments,
@@ -152,6 +153,16 @@ router.post("/new", newComment);
  *                 message:
  *                   type: string
  *                   example: Updated successfully
+ *       '400':
+ *         description: Failed due to invalid comment ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Failed to update, Invalid Comment ID
  *       '500':
  *         description: Internal server error. Failed to update the comment.
  *         content:
@@ -160,5 +171,46 @@ router.post("/new", newComment);
  *               $ref: '#/components/schemas/ServerError'
  */
 router.patch("/update/:id", updateComment);
+
+/**
+ * @swagger
+ * /comment/{id}:
+ *   delete:
+ *     tags: [Comment]
+ *     summary: Delete an existing comment.
+ *     description: Remove a comment record from the database.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: unique comment id
+ *     responses:
+ *       '200':
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Deleted successfully
+ *       '400':
+ *         description: Failed due to invalid comment ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Failed to delete, Invalid Comment ID
+ *       '500':
+ *         description: Internal server error. Failed to delete the comment.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServerError'
+ */
+router.delete("/:id", deleteComment);
 
 export default router;
