@@ -60,8 +60,23 @@ export const updatePost = async (req, res) => {
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
-    const UPDATE_POST_QUERY = `UPDATE post SET ? WHERE id = ?`;
 
+    const GET_USER_ID_QUERY = `SELECT user_id FROM post WHERE id = ?`;
+    let [userResponse] = await connection.query(GET_USER_ID_QUERY, postID);
+    userResponse = userResponse[0];
+
+    if (userResponse.length === 0) {
+      res.status(404).json({ message: "Post not found" });
+      return;
+    }
+    if (userResponse.user_id !== req.user.id) {
+      res.status(403).json({
+        message: "Forbidden: You are not allowed to update this post",
+      });
+      return;
+    }
+
+    const UPDATE_POST_QUERY = `UPDATE post SET ? WHERE id = ?`;
     const [response] = await connection.query(UPDATE_POST_QUERY, [
       updateData,
       postID,

@@ -125,6 +125,26 @@ router.post("/create", newPost);
  *                 message:
  *                   type: string
  *                   example: Failed to update
+ *       '403':
+ *         description: 'Forbidden: You are not allowed to update this post.'
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: 'Forbidden: You are not allowed to update this post'
+ *       '404':
+ *         description: Post not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Post not found
  *       '500':
  *         description: Internal server error. Failed to create a post.
  *         content:
