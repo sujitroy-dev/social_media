@@ -131,16 +131,33 @@ export const updateComment = async (req, res) => {
   }
 };
 export const deleteComment = async (req, res) => {
-  const commentID = req.params.id;
+  const { id: commentID } = req.params;
+  const { id: userID } = req.user;
   let connection;
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
+    const GET_USER_ID_QUERY = `SELECT user_id FROM comment WHERE comment_id = ?`
+    let [GET_USER_ID_RESPONSE] = await connection.query(GET_USER_ID_QUERY, commentID);
+    GET_USER_ID_RESPONSE = GET_USER_ID_RESPONSE?.[0];
+
+    if(!GET_USER_ID_RESPONSE){
+      res.status(404).json({message: "Invalid comment_id"})
+      return;
+    }
+    if(GET_USER_ID_RESPONSE.user_id !== userID){
+    res.status(401).json({message: "Unauthorized"})
+    return;
+    }
+
+
     const DELETE_COMMENT_QUERY = `
     DELETE FROM comment WHERE comment_id = ?
     `;
     const [response] = await connection.query(DELETE_COMMENT_QUERY, commentID);
+
+    await connection.commit();
 
     if (response.affectedRows > 0) {
       res.status(201).json({ message: "Deleted successfully" });
