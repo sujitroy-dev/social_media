@@ -39,11 +39,25 @@ export const viewAllComments = async (req, res) => {
 };
 export const newComment = async (req, res) => {
   const { post_id, content } = req.body;
+  console.log("user_id=",req.user.id)
   const newCommentData = { user_id: req.user.id, post_id, content };
   let connection;
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
+
+    const GET_POST_QUERY = `
+      SELECT * FROM post WHERE id = ?
+      `
+    let [GET_POST_RESPONSE] = await connection.query(GET_POST_QUERY, post_id);
+    GET_POST_RESPONSE = GET_POST_RESPONSE?.[0];
+
+    console.log({GET_POST_RESPONSE})
+    if(!GET_POST_RESPONSE){
+      res.status(404).json({message: "Invalid post_id"});
+      return;
+    }
+
 
     const NEW_COMMENT_QUERY = `
     INSERT INTO comment SET ?

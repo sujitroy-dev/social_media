@@ -1,10 +1,11 @@
 import express from "express";
 import {
-  deleteComment,
-  newComment,
-  updateComment,
-  viewAllComments,
+    deleteComment,
+    newComment,
+    updateComment,
+    viewAllComments,
 } from "../controllers/comment.controller.js";
+import {authorize} from '../middleware/authorize.js'
 const router = express.Router();
 
 /**
@@ -94,16 +95,12 @@ router.get("/all", viewAllComments);
  *           schema:
  *             type: object
  *             properties:
- *               user_id:
- *                 type: integer
- *                 description: commenting user_id
- *                 example: 1
  *               post_id:
  *                 type: integer
  *                 example: 3
  *               content:
  *                 type: string
- *                 description: text content
+ *                 example: text content
  *     responses:
  *       '200':
  *         description: Success.
@@ -111,6 +108,16 @@ router.get("/all", viewAllComments);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Comment'
+ *       '404':
+ *         description: Invlid credentials.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid post_id
  *       '500':
  *         description: Internal server error. Failed to comment.
  *         content:
@@ -119,7 +126,7 @@ router.get("/all", viewAllComments);
  *               $ref: '#/components/schemas/ServerError'
  */
 
-router.post("/new", newComment);
+router.post("/new", authorize, newComment);
 
 /**
  * @swagger
@@ -170,7 +177,7 @@ router.post("/new", newComment);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.patch("/update/:id", updateComment);
+router.patch("/update/:id", authorize, updateComment);
 
 /**
  * @swagger
@@ -211,6 +218,6 @@ router.patch("/update/:id", updateComment);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.delete("/:id", deleteComment);
+router.delete("/:id", authorize, deleteComment);
 
 export default router;
