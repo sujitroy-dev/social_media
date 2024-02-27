@@ -7,6 +7,27 @@ export const newPost = async (req, res) => {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
+    // check pet id valid or not
+    const GET_USER_ID_QUERY = `
+    SELECT user_id FROM pet
+    WHERE id = ?
+    `;
+
+    let [GET_USER_ID_RESPONSE] = await connection.query(
+      GET_USER_ID_QUERY,
+      pet_id
+    );
+    GET_USER_ID_RESPONSE = GET_USER_ID_RESPONSE?.[0];
+
+    if (!GET_USER_ID_RESPONSE) {
+      res.status(403).json({ message: "Invalid pet_id" });
+      return;
+    }
+    if (GET_USER_ID_RESPONSE.user_id !== req.user.id) {
+      res.status(403).json({ message: "Unauthorized" });
+      return;
+    }
+
     const CREATE_NEW_POST_QUERY = `INSERT INTO post (pet_id, title)
     VALUES (?, ?)`;
 
@@ -19,7 +40,7 @@ export const newPost = async (req, res) => {
     }
 
     let assets = [];
-    if (data.length > 0) {
+    if (data?.length > 0) {
       const postID = CREATE_POST_RESPONSE.insertId;
       const ADD_POST_ASSETS_QUERY = `INSERT INTO post_asset
       (post_id, url, type)
@@ -201,6 +222,29 @@ export const deletePost = async (req, res) => {
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
+
+    // check pet id valid or not
+    const GET_USER_ID_QUERY = `
+    SELECT pet.user_id FROM post
+    LEFT JOIN pet ON pet.id = post.pet_id
+    WHERE post.id = ?
+    `;
+
+    let [GET_USER_ID_RESPONSE] = await connection.query(
+      GET_USER_ID_QUERY,
+      postId
+    );
+    GET_USER_ID_RESPONSE = GET_USER_ID_RESPONSE?.[0];
+
+    if (!GET_USER_ID_RESPONSE) {
+      res.status(403).json({ message: "Invalid pet_id" });
+      return;
+    }
+    if (GET_USER_ID_RESPONSE.user_id !== req.user?.id) {
+      console.error({ token: req.user.id, db: GET_USER_ID_RESPONSE.user_id });
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
 
     const DELETE_POST_ASSET_QUERY = `DELETE FROM post_asset WHERE post_id = ?`;
     const DELETE_POST_QUERY = `DELETE FROM post WHERE id = ?`;

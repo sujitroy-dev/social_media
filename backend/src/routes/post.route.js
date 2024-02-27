@@ -7,6 +7,7 @@ import {
   newPost,
   updatePost,
 } from "../controllers/post.controller.js";
+import { authorize } from "../middleware/authorize.js";
 const router = express.Router();
 
 /**
@@ -304,7 +305,7 @@ router.get("/", getFeedPosts);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.delete("/:id", deletePost);
+router.delete("/:id", authorize, deletePost);
 
 /**
  * @swagger
