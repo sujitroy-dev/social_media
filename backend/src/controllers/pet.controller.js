@@ -57,7 +57,7 @@ export const getPetById = async (req, res) => {
 };
 
 export const createPet = async (req, res) => {
-  let { user_id, name, breed, type, dob, about } = req.body;
+  let { name, breed, type, dob, about } = req.body;
   let connection;
 
   try {
@@ -67,7 +67,7 @@ export const createPet = async (req, res) => {
     const INSERT_QUERY = `INSERT INTO pet (user_id, name, breed, type, dob, about)
     VALUES (?, ?, ?, ?, ?, ?)`;
     const response = await connection.query(INSERT_QUERY, [
-      user_id,
+      req.user.user_id,
       name,
       breed,
       type,
@@ -80,7 +80,7 @@ export const createPet = async (req, res) => {
     if (response?.[0].affectedRows > 0) {
       return res.status(201).json({
         id: response?.[0].insertId,
-        user_id,
+        user_id: req.user.user_id,
         name,
         breed,
         type,
