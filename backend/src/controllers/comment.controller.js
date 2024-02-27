@@ -83,19 +83,32 @@ export const newComment = async (req, res) => {
   }
 };
 export const updateComment = async (req, res) => {
+  const { id: commentID } = req.params;
   const { content } = req.body;
-  const updateData = { content };
-  const commentID = req.params.id;
+  const userID = req.user.id;
+
   let connection;
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const UPDATE_COMMENT_QUERY = `
-    UPDATE comment SET ? WHERE comment_id = ?
-    `;
+    const GET_USER_ID_QUERY = `SELECT user_id FROM comment WHERE comment_id = ?`
+    let [GET_USER_ID_RESPONSE] = await connection.query(GET_USER_ID_QUERY, commentID);
+    GET_USER_ID_RESPONSE = GET_USER_ID_RESPONSE?.[0];
+
+    if(!GET_USER_ID_RESPONSE){
+      res.status(404).json({message: "Invalid comment_id"})
+      return;
+    }
+    if(GET_USER_ID_RESPONSE.user_id !== userID){
+    res.status(401).json({message: "Unauthorized"})
+    return;
+    }
+
+
+    const UPDATE_COMMENT_QUERY = `UPDATE comment SET ? WHERE comment_id = ?`;
     const [response] = await connection.query(UPDATE_COMMENT_QUERY, [
-      updateData,
+      { content },
       commentID,
     ]);
 
