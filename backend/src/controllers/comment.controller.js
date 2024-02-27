@@ -8,7 +8,7 @@ export const viewAllComments = async (req, res) => {
     await connection.beginTransaction();
 
     const GET_POST_COMMENTS_QUERY = `
-    SELECT 
+    SELECT
       c.comment_id,
       c.content,
       JSON_OBJECT(
@@ -38,8 +38,8 @@ export const viewAllComments = async (req, res) => {
   }
 };
 export const newComment = async (req, res) => {
-  const { user_id, post_id, content } = req.body;
-  const newCommentData = { user_id, post_id, content };
+  const { post_id, content } = req.body;
+  const newCommentData = { user_id: req.user.id, post_id, content };
   let connection;
   try {
     connection = await pool.getConnection();
