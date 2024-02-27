@@ -6,6 +6,7 @@ import {
   getPetsByUser,
   updatePet,
 } from "../controllers/pet.controller.js";
+import { authorize } from "../middleware/authorize.js";
 const router = express.Router();
 
 /**
@@ -120,7 +121,7 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.post("/create", createPet);
+router.post("/create", authorize, createPet);
 
 /**
  * @swagger
@@ -140,8 +141,6 @@ router.post("/create", createPet);
  *             schema:
  *               type: object
  *               properties:
- *                 id:
- *                   type: integer
  *                 user_id:
  *                   type: integer
  *                 name:
@@ -189,7 +188,7 @@ router.post("/create", createPet);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.patch("/update/:id", updatePet);
+router.patch("/update/:id", authorize, updatePet);
 
 /**
  * @swagger
@@ -286,6 +285,6 @@ router.get("/view/:id", getPetById);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.delete("/remove/:id", deletePet);
+router.delete("/remove/:id", authorize, deletePet);
 
 export default router;
