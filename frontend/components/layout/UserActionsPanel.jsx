@@ -14,7 +14,6 @@ import {
 
 import {
   PresentationChartBarIcon,
-  ShoppingBagIcon,
   UserCircleIcon,
   Cog6ToothIcon,
   PowerIcon,
