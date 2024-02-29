@@ -1,30 +1,42 @@
-import { Avatar, Button, Typography } from "@material-tailwind/react";
+import { Avatar, Button, Input, Typography } from "@material-tailwind/react";
+import Link from "next/link";
 
 export default function AdditionalContentPanel() {
   return (
     <aside className="w-72 p-8">
-      <Typography variant="h5" className="mb-4">
-        Suggestions
-      </Typography>
-      <div className="flex flex-col gap-4" aria-label="Profile Suggestions">
-        <UserCard
-          id={1}
-          name="Nick"
-          username="shelburne"
-          profile_pic="https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=126&h=75&dpr=2"
-        />
-        <UserCard
-          id={1}
-          name="Sujit"
-          username="sujitroy"
-          profile_pic="https://sujitroy.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdoy9gcs3y%2Fimage%2Fupload%2Fw_100%2Ch_100%2Cc_fill%2Fv1681144363%2Fprofile_csaemb.webp&w=1080&q=75"
-        />
-        <UserCard
-          id={1}
-          name="Salena"
-          username="salenaaltman"
-          profile_pic="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=126&h=75&dpr=2"
-        />
+      <div className="mb-6" aria-label="Search Profile">
+        <Typography variant="h5" className="mb-2">
+          Search
+        </Typography>
+        <Input placeholder="Search" />
+      </div>
+      <div className="" aria-label="Profile Suggestions">
+        <Typography variant="h5" className="mb-4">
+          Suggestions
+        </Typography>
+        <div className="flex flex-col gap-4">
+          <UserCard
+            id={1}
+            name="Nick"
+            username="shelburne"
+            profile_pic="https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=126&h=75&dpr=2"
+          />
+          <UserCard
+            id={1}
+            name="Sujit"
+            username="sujitroy"
+            profile_pic="https://sujitroy.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fdoy9gcs3y%2Fimage%2Fupload%2Fw_100%2Ch_100%2Cc_fill%2Fv1681144363%2Fprofile_csaemb.webp&w=1080&q=75"
+          />
+          <UserCard
+            id={1}
+            name="Salena"
+            username="salenaaltman"
+            profile_pic="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=126&h=75&dpr=2"
+          />
+          <Link href="/suggestions" className="text-gray-600 text-sm">
+            See all
+          </Link>
+        </div>
       </div>
     </aside>
   );
