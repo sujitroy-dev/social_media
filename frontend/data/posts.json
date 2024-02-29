@@ -1,0 +1,29 @@
+[
+    {
+        "name": "Jocen",
+        "username": "alenmary",
+        "profile_pic": "https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=126&h=75&dpr=2",
+        "assetsArr": [
+            {
+                "id": 1,
+                "url": "https://images.pexels.com/photos/417173/pexels-photo-417173.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+                "type": "image"
+            },
+            {
+                "id": 2,
+                "url": "https://images.pexels.com/photos/691668/pexels-photo-691668.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+                "type": "image"
+            },
+            {
+                "id": 3,
+                "url": "https://images.pexels.com/photos/913215/pexels-photo-913215.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+                "type": "image"
+            },
+            {
+                "id": 4,
+                "url": "https://images.pexels.com/photos/1134188/pexels-photo-1134188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+                "type": "image"
+            }
+        ]
+    }
+]
