@@ -16,9 +16,11 @@ export default function Home() {
         closeModal={() => SetShowAuthForm(false)}
       />
       <MainLayout>
-        {posts.map((post) => (
-          <Post {...post} />
-        ))}
+        <div>
+          {posts.map((post) => (
+            <Post {...post} />
+          ))}
+        </div>
       </MainLayout>
     </>
   );

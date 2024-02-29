@@ -18,9 +18,15 @@ import {
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconFill } from "@heroicons/react/24/solid";
 
-export default function Post({ name, username, profile_pic, assetsArr }) {
+export default function Post({
+  name,
+  username,
+  profile_pic,
+  content,
+  assetsArr,
+}) {
   return (
-    <Card className="p-8">
+    <Card className="p-8 shadow-sm border-x border-t border-gray-200 rounded-none">
       <div className="flex justify-between items-center mb-5">
         <div className="flex gap-3">
           <Avatar src={profile_pic} alt="avatar" size="md" />
@@ -46,10 +52,7 @@ export default function Post({ name, username, profile_pic, assetsArr }) {
           </IconButton>
         </Tooltip>
       </div>
-      <Typography className="font-normal mb-4">
-        Hi everyone, today i was on the most beautiful mountain in the world😍,
-        I also want to say hi to @jhon !
-      </Typography>
+      <Typography className="font-normal mb-4">{content}</Typography>
       <div className="mb-4">
         <Swiper className="mySwiper" navigation={false} modules={[Navigation]}>
           {assetsArr.map((elm) => (
