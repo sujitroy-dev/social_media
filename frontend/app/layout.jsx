@@ -5,8 +5,8 @@ import { Providers } from "@/components/providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "PetPals | Share your moments with pet",
-  description: "",
+  title: "Share your moments fun moments",
+  description: "This is a social-media application.",
 };
 
 export default function RootLayout({ children }) {
