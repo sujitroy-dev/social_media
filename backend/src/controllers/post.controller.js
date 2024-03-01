@@ -1,7 +1,7 @@
 import pool from "../config/database.js";
 
 export const newPost = async (req, res) => {
-  const { pet_id, title, data } = req.body;
+  const { pet_id, content, data } = req.body;
   let connection;
   try {
     connection = await pool.getConnection();
@@ -9,18 +9,18 @@ export const newPost = async (req, res) => {
 
     // check pet id valid or not
     const GET_USER_ID_QUERY = `
-    SELECT user_id FROM pet
-    WHERE id = ?
+    SELECT user_id FROM user
+    WHERE user_id = ?
     `;
 
     let [GET_USER_ID_RESPONSE] = await connection.query(
       GET_USER_ID_QUERY,
-      pet_id
+      user_id
     );
     GET_USER_ID_RESPONSE = GET_USER_ID_RESPONSE?.[0];
 
     if (!GET_USER_ID_RESPONSE) {
-      res.status(403).json({ message: "Invalid pet_id" });
+      res.status(403).json({ message: "Invalid user_id" });
       return;
     }
     if (GET_USER_ID_RESPONSE.user_id !== req.user.id) {
@@ -28,12 +28,12 @@ export const newPost = async (req, res) => {
       return;
     }
 
-    const CREATE_NEW_POST_QUERY = `INSERT INTO post (pet_id, title)
+    const CREATE_NEW_POST_QUERY = `INSERT INTO post (user_id, content)
     VALUES (?, ?)`;
 
     const [CREATE_POST_RESPONSE] = await connection.query(
       CREATE_NEW_POST_QUERY,
-      [pet_id, title]
+      [pet_id, content]
     );
     if (CREATE_POST_RESPONSE.affectedRows == 0) {
       return res.json({ message: "Failed to upload" });
@@ -50,7 +50,7 @@ export const newPost = async (req, res) => {
       await connection.query(ADD_POST_ASSETS_QUERY, [values]);
 
       const [rows] = await connection.query(
-        `SELECT id, url, type  FROM post_asset WHERE post_id = ?`,
+        `SELECT post_asset_id, url, type  FROM post_asset WHERE post_id = ?`,
         postID
       );
       assets = rows;
@@ -58,7 +58,12 @@ export const newPost = async (req, res) => {
     await connection.commit();
     return res.status(201).json({
       message: "Post uploaded",
-      data: { id: CREATE_POST_RESPONSE.insertId, pet_id, title, assets },
+      data: {
+        post_id: CREATE_POST_RESPONSE.insertId,
+        user_id,
+        content,
+        assets,
+      },
     });
   } catch (error) {
     if (connection) {
@@ -74,15 +79,15 @@ export const newPost = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
-  const { title } = req.body;
+  const { content } = req.body;
   const postID = req.params.id;
-  const updateData = { title };
+  const updateData = { content };
   let connection;
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const GET_USER_ID_QUERY = `SELECT user_id FROM post WHERE id = ?`;
+    const GET_USER_ID_QUERY = `SELECT user_id FROM post WHERE post_id = ?`;
     let [userResponse] = await connection.query(GET_USER_ID_QUERY, postID);
     userResponse = userResponse[0];
 
@@ -97,7 +102,7 @@ export const updatePost = async (req, res) => {
       return;
     }
 
-    const UPDATE_POST_QUERY = `UPDATE post SET ? WHERE id = ?`;
+    const UPDATE_POST_QUERY = `UPDATE post SET ? WHERE post_id = ?`;
     const [response] = await connection.query(UPDATE_POST_QUERY, [
       updateData,
       postID,
@@ -131,17 +136,18 @@ export const getPost = async (req, res) => {
     await connection.beginTransaction();
 
     const GET_POST_QUERY = `SELECT
-      p.id AS post_id,
-      p.pet_id,
-      p.title,
+      p.post_id,
+      p.user_id,
+      CONCAT(u.first_name, ' ', u.last_name) AS full_name,
+      u.username,
+      u.profile_picture AS pet_profile_pic,
+      p.content,
       JSON_ARRAYAGG(pa.url) AS asset_urls,
-      pet.name AS pet_name,
-      pet.profile_picture AS pet_profile_pic,
       p.created_at,
       p.updated_at
     FROM post p
       LEFT JOIN post_asset pa ON pa.post_id = p.id
-      LEFT JOIN pet ON pet.id = p.pet_id
+      LEFT JOIN user AS u ON u.user_id = p.post_id
     WHERE p.id = ?`;
 
     const [result] = await connection.query(GET_POST_QUERY, postID);
@@ -173,19 +179,19 @@ export const getFeedPosts = async (req, res) => {
 
     const GET_POSTS_QUERY = `
     SELECT 
-      p.id AS post_id,
-      p.pet_id, p.title,
-      COALESCE(JSON_ARRAYAGG(JSON_OBJECT('id', pa.id, 'url', pa.url)), JSON_ARRAY()) AS asset_urls,
-      pet.name as pet_name,
-      pet.profile_picture as pet_profile_pic,
+      p.post_id, p.user_id, p.content,
+      CONCAT(u.first_name, ' ', u.last_name) AS full_name,
+      u.username,
+      u.profile_picture,
+      COALESCE(JSON_ARRAYAGG(JSON_OBJECT('id', pa.post_asset_id, 'url', pa.url)), JSON_ARRAY()) AS asset_urls,
       p.created_at
     FROM post as p
     LEFT JOIN post_asset AS pa
     ON  p.id = pa.post_id
-    LEFT JOIN pet
-    ON pet.id = p.pet_id
-    GROUP BY p.id, p.title, p.created_at
-    ORDER BY p.id DESC
+    LEFT JOIN user AS u
+    ON u.user_id = p.user_id
+    GROUP BY p.post_id, p.content, p.created_at
+    ORDER BY p.post_id DESC
     LIMIT ?
     OFFSET ?
     `;
@@ -225,9 +231,9 @@ export const deletePost = async (req, res) => {
 
     // check pet id valid or not
     const GET_USER_ID_QUERY = `
-    SELECT pet.user_id FROM post
-    LEFT JOIN pet ON pet.id = post.pet_id
-    WHERE post.id = ?
+    SELECT u.user_id FROM post AS p
+    LEFT JOIN user AS u ON u.user_id = p.user_id
+    WHERE p.post_id = ?
     `;
 
     let [GET_USER_ID_RESPONSE] = await connection.query(
@@ -274,7 +280,7 @@ export const deletePostAsset = async (req, res) => {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const DELETE_ASSET_QUERY = `DELETE FROM post_asset WHERE id = ?`;
+    const DELETE_ASSET_QUERY = `DELETE FROM post_asset WHERE post_asset_id = ?`;
     const [response] = await connection.query(DELETE_ASSET_QUERY, assetId);
     await connection.commit();
 

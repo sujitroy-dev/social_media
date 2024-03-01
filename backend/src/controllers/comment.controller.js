@@ -19,7 +19,7 @@ export const viewAllComments = async (req, res) => {
           c.created_at,
           c.updated_at
     FROM comment AS c
-    LEFT JOIN user AS u ON u.id = c.user_id
+    LEFT JOIN user AS u ON u.user_id = c.user_id
     WHERE c.post_id = ? AND c.parent_comment_id IS NULL
     `;
     const [rows] = await connection.query(GET_POST_COMMENTS_QUERY, postID);
@@ -39,7 +39,6 @@ export const viewAllComments = async (req, res) => {
 };
 export const newComment = async (req, res) => {
   const { post_id, content } = req.body;
-  console.log("user_id=",req.user.id)
   const newCommentData = { user_id: req.user.id, post_id, content };
   let connection;
   try {
@@ -48,16 +47,15 @@ export const newComment = async (req, res) => {
 
     const GET_POST_QUERY = `
       SELECT * FROM post WHERE id = ?
-      `
+      `;
     let [GET_POST_RESPONSE] = await connection.query(GET_POST_QUERY, post_id);
     GET_POST_RESPONSE = GET_POST_RESPONSE?.[0];
 
-    console.log({GET_POST_RESPONSE})
-    if(!GET_POST_RESPONSE){
-      res.status(404).json({message: "Invalid post_id"});
+    console.log({ GET_POST_RESPONSE });
+    if (!GET_POST_RESPONSE) {
+      res.status(404).json({ message: "Invalid post_id" });
       return;
     }
-
 
     const NEW_COMMENT_QUERY = `
     INSERT INTO comment SET ?
@@ -92,19 +90,21 @@ export const updateComment = async (req, res) => {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const GET_USER_ID_QUERY = `SELECT user_id FROM comment WHERE comment_id = ?`
-    let [GET_USER_ID_RESPONSE] = await connection.query(GET_USER_ID_QUERY, commentID);
+    const GET_USER_ID_QUERY = `SELECT user_id FROM comment WHERE comment_id = ?`;
+    let [GET_USER_ID_RESPONSE] = await connection.query(
+      GET_USER_ID_QUERY,
+      commentID
+    );
     GET_USER_ID_RESPONSE = GET_USER_ID_RESPONSE?.[0];
 
-    if(!GET_USER_ID_RESPONSE){
-      res.status(404).json({message: "Invalid comment_id"})
+    if (!GET_USER_ID_RESPONSE) {
+      res.status(404).json({ message: "Invalid comment_id" });
       return;
     }
-    if(GET_USER_ID_RESPONSE.user_id !== userID){
-    res.status(401).json({message: "Unauthorized"})
-    return;
+    if (GET_USER_ID_RESPONSE.user_id !== userID) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
     }
-
 
     const UPDATE_COMMENT_QUERY = `UPDATE comment SET ? WHERE comment_id = ?`;
     const [response] = await connection.query(UPDATE_COMMENT_QUERY, [
@@ -138,19 +138,21 @@ export const deleteComment = async (req, res) => {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const GET_USER_ID_QUERY = `SELECT user_id FROM comment WHERE comment_id = ?`
-    let [GET_USER_ID_RESPONSE] = await connection.query(GET_USER_ID_QUERY, commentID);
+    const GET_USER_ID_QUERY = `SELECT user_id FROM comment WHERE comment_id = ?`;
+    let [GET_USER_ID_RESPONSE] = await connection.query(
+      GET_USER_ID_QUERY,
+      commentID
+    );
     GET_USER_ID_RESPONSE = GET_USER_ID_RESPONSE?.[0];
 
-    if(!GET_USER_ID_RESPONSE){
-      res.status(404).json({message: "Invalid comment_id"})
+    if (!GET_USER_ID_RESPONSE) {
+      res.status(404).json({ message: "Invalid comment_id" });
       return;
     }
-    if(GET_USER_ID_RESPONSE.user_id !== userID){
-    res.status(401).json({message: "Unauthorized"})
-    return;
+    if (GET_USER_ID_RESPONSE.user_id !== userID) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
     }
-
 
     const DELETE_COMMENT_QUERY = `
     DELETE FROM comment WHERE comment_id = ?

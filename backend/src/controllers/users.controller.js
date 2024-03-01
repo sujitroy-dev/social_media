@@ -13,7 +13,7 @@ export const getAllUsers = async (req, res) => {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const GET_USER_QUERY = `SELECT id, username, email, created_at, updated_at
+    const GET_USER_QUERY = `SELECT user_id, username, email, created_at, updated_at
     FROM user
     LIMIT ?
     OFFSET ?`;
@@ -56,7 +56,7 @@ export const getUserById = async (req, res) => {
     await connection.beginTransaction();
 
     const [rows] = await connection.query(
-      `SELECT id, first_name, last_name, username, email, created_at, updated_at  FROM user WHERE id = ?`,
+      `SELECT user_id, first_name, last_name, username, email, created_at, updated_at  FROM user WHERE id = ?`,
       id
     );
 
@@ -107,7 +107,7 @@ export const udpateUserById = async (req, res) => {
     connection = await pool.getConnection();
     connection.beginTransaction();
 
-    const query = `UPDATE user SET ? WHERE id = ?`;
+    const query = `UPDATE user SET ? WHERE user_id = ?`;
     const [rows] = await connection.query(query, [updateUser, id]);
 
     connection.commit();
@@ -178,7 +178,7 @@ export const login = async (req, res) => {
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const SEARCH_QUERY = `SELECT id, username, email, password as hashPassword
+    const SEARCH_QUERY = `SELECT user_id, username, email, password as hashPassword
     FROM user
     WHERE email = ? OR username = ?`;
     const [row] = await pool.query(SEARCH_QUERY, [identifier, identifier]);

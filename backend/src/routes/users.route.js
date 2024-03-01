@@ -37,7 +37,7 @@ import { authorize } from "../middleware/authorize.js";
  *         - email
  *         - password
  *       properties:
- *         id:
+ *         user_id:
  *           type: integer
  *           description: auto generated user id
  *           example: 1
