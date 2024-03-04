@@ -78,9 +78,9 @@
     },
     {
         "id": 4,
-        "name": "Liam",
+        "name": "Liam Doodler",
         "username": "liam_doodles",
-        "profile_pic": "https://images.pexels.com/photos/2740656/pexels-photo-2740656.jpeg?auto=compress&cs=tinysrgb&w=126&h=75&dpr=2",
+        "profile_pic": null,
         "content": "Check out my latest doodle artwork! 🎨 What do you think? #art #creativity",
         "assetsArr": [
             {
