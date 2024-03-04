@@ -35,7 +35,15 @@ CREATE TABLE IF NOT EXISTS post_asset (
    FOREIGN KEY (post_id) REFERENCES post(id)
 );
 
-
+-- create like tables
+CREATE TABLE IF NOT EXISTS like (
+  `like_id` INTEGER auto_increment PRIMARY KEY,
+  `user_id` INTEGER NOT NULL,
+  `post_id` INTEGER NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (user_id) REFERENCES user(user_id),
+   FOREIGN KEY (post_id) REFERENCES post(post_id)
+);
 
 -- create comment tables
 CREATE TABLE IF NOT EXISTS comment (
