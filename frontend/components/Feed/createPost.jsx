@@ -16,7 +16,7 @@ export default function CreatePost() {
   return (
     <section className="border-x border-t border-gray-200 p-8 bg-gray-50 rounded-t-sm">
       <div
-        className={`p-2 rounded-md bg-white mb-4 border ${isInputFocus ? "border-gray-500 shadow-sm" : "border-gray-300"} flex gap-2`}
+        className={`p-2 rounded-md bg-white mb-4 border-2 ${isInputFocus ? "border-gray-800 shadow-sm" : "border-gray-300"} flex gap-2`}
       >
         {"valid" ? (
           <Avatar
@@ -30,7 +30,7 @@ export default function CreatePost() {
         )}
 
         <textarea
-          class="block w-full text-base resize-none focus:outline-none  no-scrollbar flex-1"
+          class="block w-full text-base resize-none focus:outline-none no-scrollbar flex-1"
           placeholder="Share something..."
           onChange={handleTextChange}
           onFocus={() => setIsInputFocus(true)}
@@ -43,11 +43,11 @@ export default function CreatePost() {
         <div className="">
           <Tooltip content="Select Photos" placement="bottom">
             <IconButton variant="text" className="rounded-full">
-              <PhotoIcon color="black" width={25} height={25} />
+              <PhotoIcon color="black" width={24} height={24} />
             </IconButton>
           </Tooltip>
         </div>
-        <Button className="rounded-full">Send</Button>
+        <Button className="rounded-full">Post</Button>
       </div>
     </section>
   );
