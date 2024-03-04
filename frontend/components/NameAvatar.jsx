@@ -7,7 +7,7 @@ export default function NameAvatar({ name = "", size = "md", rounded = "md" }) {
 
   return (
     <div
-      className={`bg-purple-400 text-white uppercase rounded-${rounded} ${size === "sm" ? "w-10 h-10 flex items-center justify-center gap-0.5 font-normal text-xl" : size === "lg" ? "w-14 h-14 flex gap-0.5 items-center justify-center font-semibold text-2xl" : "w-12 h-12 flex gap-0.5 items-center justify-center font-semibold text-2xl"}`}
+      className={`bg-purple-400 text-white uppercase rounded-${rounded} ${size === "sm" ? "w-10 h-10 flex items-center justify-center gap-0.5 font-normal text-xl" : size === "lg" ? "w-14 h-14 flex gap-0.5 items-center justify-center font-semibold text-2xl" : "w-12 h-12 flex gap-0.5 items-center justify-center font-semibold text-xl"}`}
     >
       {nameCharArr.map((elm) => (
         <span>{elm}</span>
