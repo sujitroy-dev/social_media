@@ -18,6 +18,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconFill } from "@heroicons/react/24/solid";
 import NameAvatar from "../NameAvatar";
+import { toggleLikeFeedPost } from "@/store/reducers/postsSlice";
+import { useDispatch } from "react-redux";
 
 export default function Post({
   id: postID,
@@ -26,9 +28,15 @@ export default function Post({
   profile_pic,
   content,
   assetsArr,
-  isLiked = false,
+  liked = false,
+  feedType,
+  likeFunc,
 }) {
   const [showMenu, setShowMenu] = useState(false);
+  const dispatch = useDispatch();
+
+  const toggleLike = () =>
+    dispatch(toggleLikeFeedPost({ feedType, postID, like: !liked }));
   return (
     <Card className="p-8 shadow-sm border-x border-t border-gray-200 rounded-none">
       <div className="flex justify-between items-center mb-5">
@@ -108,9 +116,7 @@ export default function Post({
                 height={384}
                 loading="lazy"
                 className="w-full h-96 object-contain rounded-md cursor-grab"
-                onDoubleClick={() =>
-                  console.log("double clicked on post: ", postID)
-                }
+                onDoubleClick={likeFunc || toggleLike}
               />
             </SwiperSlide>
           ))}
@@ -118,11 +124,16 @@ export default function Post({
       </div>
       <div className="flex items-center gap-2">
         <Tooltip content="Like">
-          <IconButton variant="text" className="rounded-full" color="red">
-            {isLiked ? (
-              <HeartIcon width={28} className="" color="#4b4b4b" />
-            ) : (
+          <IconButton
+            variant="text"
+            className="rounded-full"
+            color="red"
+            onClick={likeFunc || toggleLike}
+          >
+            {liked ? (
               <HeartIconFill width={28} color="red" />
+            ) : (
+              <HeartIcon width={28} className="" color="#4b4b4b" />
             )}
           </IconButton>
         </Tooltip>
