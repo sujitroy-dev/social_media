@@ -17,6 +17,7 @@ import {
   ShareIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconFill } from "@heroicons/react/24/solid";
+import NameAvatar from "../NameAvatar";
 
 export default function Post({
   id: postID,
@@ -32,7 +33,11 @@ export default function Post({
     <Card className="p-8 shadow-sm border-x border-t border-gray-200 rounded-none">
       <div className="flex justify-between items-center mb-5">
         <div className="flex gap-3">
-          <Avatar src={profile_pic} alt="avatar" size="md" />
+          {profile_pic ? (
+            <Avatar src={profile_pic} alt="avatar" size="md" />
+          ) : (
+            <NameAvatar name={name} rounded="full" />
+          )}
           <div className="flex flex-col align-items flex-1 overflow-x-hidden">
             <span className="font-semibold truncate">{name}</span>
             <span className="font-normal text-sm text-gray-600 truncate">
