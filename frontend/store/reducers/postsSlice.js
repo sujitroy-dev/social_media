@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
+import postsArr from "../../data/posts.json";
 
 const postsSlice = createSlice({
   name: "posts",
   initialState: {
-    recents: [],
+    recents: [...postsArr],
     friends: [],
     popular: [],
   },
