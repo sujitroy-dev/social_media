@@ -4,8 +4,8 @@ use `social-media`
 -- create user table
 CREATE TABLE IF NOT EXISTS user (
   `user_id` integer auto_increment primary key,
-  `email` varchar(50) primary key,
-  `username` varchar(100) primary key,
+  `email` varchar(50),
+  `username` varchar(100),
   `first_name` varchar(100),
   `last_name` varchar(100),
   `password` varchar(100),
@@ -26,17 +26,17 @@ CREATE TABLE IF NOT EXISTS post (
 
 -- -- create post_asset table
 CREATE TABLE IF NOT EXISTS post_asset (
-  `post_asset_id` integer auto_increment primary key,
-  `post_id` integer,
+  `post_asset_id` INTEGER auto_increment primary key,
+  `post_id` INTEGER,
   `url` VARCHAR(100),
   `type` ENUM("image", "video"),
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-   FOREIGN KEY (post_id) REFERENCES post(id)
+   FOREIGN KEY (post_id) REFERENCES post(post_id)
 );
 
 -- create like tables
-CREATE TABLE IF NOT EXISTS like (
+CREATE TABLE IF NOT EXISTS `like` (
   `like_id` INTEGER auto_increment PRIMARY KEY,
   `user_id` INTEGER NOT NULL,
   `post_id` INTEGER NOT NULL,
@@ -70,3 +70,8 @@ CREATE TABLE IF NOT EXISTS following (
    FOREIGN KEY (following_user_id) REFERENCES user(user_id),
    FOREIGN KEY (followed_user_id) REFERENCES user(user_id)
 );
+
+CREATE TABLE IF NOT EXISTS token (
+  `token` VARCHAR(100) PRIMARY KEY,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
