@@ -200,7 +200,7 @@ export const login = async (req, res) => {
         role: "user",
       },
       process.env.SECRET_KEY,
-      { expiresIn: "365d" }
+      { expiresIn: "28d" }
     );
 
     // Set cookie with the token
