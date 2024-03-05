@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 export default function Home() {
   const [showAuthForm, SetShowAuthForm] = useState(false);
 
-  const posts = useSelector((state) => state.posts.recents) || [];
+  const posts = useSelector((state) => state.posts.recents.posts) || [];
 
   return (
     <>
