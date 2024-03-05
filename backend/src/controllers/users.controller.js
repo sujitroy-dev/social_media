@@ -181,8 +181,10 @@ export const login = async (req, res) => {
     const SEARCH_QUERY = `SELECT user_id, username, email, password as hashPassword
     FROM user
     WHERE email = ? OR username = ?`;
-    const [row] = await pool.query(SEARCH_QUERY, [identifier, identifier]);
-    await connection.commit();
+    const [row] = await connection.query(SEARCH_QUERY, [
+      identifier,
+      identifier,
+    ]);
 
     const { hashPassword } = row?.[0];
 
@@ -203,7 +205,21 @@ export const login = async (req, res) => {
       { expiresIn: "28d" }
     );
 
-    // Set cookie with the token
+    // store the token for token validation
+    const STORE_TOKEN_QUERY = `
+    INSERT INTO token (token)
+    VALUES(?)`;
+    const [STORE_TOKEN_RESPONSE] = await connection.query(
+      STORE_TOKEN_QUERY,
+      token
+    );
+    if (STORE_TOKEN_RESPONSE.affectedRows === 0) {
+      res.status(400).json({ message: "Failed to save the token, try again." });
+      return;
+    }
+
+    await connection.commit();
+
     res.cookie("token", token, {
       maxAge: 365 * 24 * 60 * 60 * 1000,
       httpOnly: true,
