@@ -11,15 +11,23 @@ const userSlice = createSlice({
       email: null,
     },
     token: null,
-    isLoggedIn: false,
-    tokenVerified: false,
+    loggedIn: false,
   },
   reducers: {
-    fetchUserSuccess(state, action) {
-      return { ...state, user: action.payload };
+    loginUser(state, action) {
+      const { token, user } = action.payload;
+      const { user_id, first_name, last_name, username, email } = user;
+      state.loggedIn = true;
+      state.token = token;
+      state.user = { user_id, first_name, last_name, username, email };
+    },
+    logoutUser(state, _) {
+      state.loggedIn = false;
+      state.token = null;
+      state.user = {};
     },
   },
 });
 
-export const { fetchUserSuccess } = userSlice.actions;
+export const { loginUser, logoutUser } = userSlice.actions;
 export default userSlice.reducer;
