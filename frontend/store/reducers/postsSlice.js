@@ -52,16 +52,20 @@ const postsSlice = createSlice({
     toggleFeedPostLike(state, action) {
       const { feedType, postID } = action.payload;
       // find index of the post
-      const index = state[feedType]?.findIndex((post) => post.id === postID);
+      const index = state[feedType].posts.findIndex(
+        (post) => post.id === postID
+      );
       // update the post state liked: true
-      state[feedType][index].liked = !state[feedType][index].liked;
+      state[feedType].posts[index].liked = !state[feedType].posts[index].liked;
     },
     toggleFeedPostLikeFailed(state, action) {
       const { feedType, postID } = action.payload;
       // find index of the post
-      const index = state[feedType]?.findIndex((post) => post.id === postID);
+      const index = state[feedType].posts.findIndex(
+        (post) => post.id === postID
+      );
       // reverse the state the previouse
-      state[feedType][index].liked = !state[feedType][index].liked;
+      state[feedType].posts[index].liked = !state[feedType].posts[index].liked;
     },
   },
 });
