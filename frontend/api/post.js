@@ -1,9 +1,25 @@
 import axios from "@/utils/axios.js";
 
 export const postsApi = {
-  fetchPosts: async () => {
+  fetchRecentPosts: async () => {
     try {
-      const response = await axios.get("/posts");
+      const response = await axios.get("/posts/recent");
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch posts");
+    }
+  },
+  fetchFriendsPosts: async () => {
+    try {
+      const response = await axios.get("/posts/friends");
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch posts");
+    }
+  },
+  fetchPopularPosts: async () => {
+    try {
+      const response = await axios.get("/posts/popular");
       return response.data;
     } catch (error) {
       throw new Error("Failed to fetch posts");
