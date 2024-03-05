@@ -38,7 +38,15 @@ export const postsApi = {
       const response = await axios.delete(`/posts/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error("Failed to fetch posts");
+      throw new Error("Failed to delete the post");
+    }
+  },
+  likePost: async (id) => {
+    try {
+      const response = await axios.post(`/posts/like/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to like the post");
     }
   },
 };
