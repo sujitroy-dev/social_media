@@ -1,3 +1,4 @@
+"use client";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import { Avatar, Button, IconButton, Tooltip } from "@material-tailwind/react";
 import React, { useState } from "react";

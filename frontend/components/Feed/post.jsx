@@ -1,3 +1,4 @@
+"use client";
 import "swiper/css";
 import "swiper/css/navigation";
 import React, { useState } from "react";
@@ -18,7 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconFill } from "@heroicons/react/24/solid";
 import NameAvatar from "../NameAvatar";
-import { toggleLikeFeedPost } from "@/store/reducers/postsSlice";
+import { toggleFeedPostLike } from "@/store/reducers/postsSlice";
 import { useDispatch } from "react-redux";
 
 export default function Post({
@@ -35,8 +36,7 @@ export default function Post({
   const [showMenu, setShowMenu] = useState(false);
   const dispatch = useDispatch();
 
-  const toggleLike = () =>
-    dispatch(toggleLikeFeedPost({ feedType, postID, like: !liked }));
+  const toggleLike = () => dispatch(toggleFeedPostLike({ feedType, postID }));
   return (
     <Card className="p-8 shadow-sm border-x border-t border-gray-200 rounded-none">
       <div className="flex justify-between items-center mb-5">
@@ -106,7 +106,11 @@ export default function Post({
       </div>
       <Typography className="font-normal mb-4">{content}</Typography>
       <div className="mb-4">
-        <Swiper className="mySwiper" navigation={false} modules={[Navigation]}>
+        <Swiper
+          className="mySwiper rounded-md"
+          navigation={false}
+          modules={[Navigation]}
+        >
           {assetsArr.map((elm) => (
             <SwiperSlide>
               <Image
@@ -115,7 +119,7 @@ export default function Post({
                 width={600}
                 height={384}
                 loading="lazy"
-                className="w-full h-96 object-contain rounded-md cursor-grab"
+                className="w-fit h-[25rem] rounded-md block object-contain cursor-grab m-auto"
                 onDoubleClick={likeFunc || toggleLike}
               />
             </SwiperSlide>
