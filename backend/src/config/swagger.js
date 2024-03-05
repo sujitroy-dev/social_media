@@ -7,10 +7,8 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "PetPals",
+      title: "social-media application",
       version: "1.0.0",
-      description:
-        "PetPals is a community platform where you can upload photos and videos of your pets.",
     },
     servers: [
       {
