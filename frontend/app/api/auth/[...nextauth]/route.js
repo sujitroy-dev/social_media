@@ -2,13 +2,6 @@ import NextAuth from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
 import GoogleProvider from "next-auth/providers/google";
 
-console.log({
-  googleID: process.env.GOOGLE_CLIENT_ID,
-  googleSec: process.env.GOOGLE_SECRET_ID,
-  twitterID: process.env.TWITTER_CLIENT_ID,
-  twitterSec: process.env.TWITTER_CLIENT_SECRET,
-});
-
 if (
   !process.env.GOOGLE_CLIENT_ID ||
   !process.env.GOOGLE_SECRET_ID ||
