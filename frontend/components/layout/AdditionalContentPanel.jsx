@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, Button, Input, Typography } from "@material-tailwind/react";
 import Link from "next/link";
 
