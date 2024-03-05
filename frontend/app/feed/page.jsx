@@ -1,29 +1,15 @@
-"use client";
-import AuthForm from "@/components/auth";
-import Post from "@/components/Feed/post";
+import AuthForm from "@/components/modal/auth";
 import MainLayout from "@/layouts/main";
-import { useState } from "react";
 import CreatePost from "@/components/Feed/createPost";
-import { useSelector } from "react-redux";
+import FeedSection from "@/components/Feed/FeedSection";
 
-export default function Home() {
-  const [showAuthForm, SetShowAuthForm] = useState(false);
-
-  const posts = useSelector((state) => state.posts.recents.posts) || [];
-
+export default async function Home() {
   return (
     <>
-      <AuthForm
-        isModalOpen={showAuthForm}
-        closeModal={() => SetShowAuthForm(false)}
-      />
+      <AuthForm />
       <MainLayout>
         <CreatePost />
-        <section aria-label="Feed Posts">
-          {posts.map((post, i) => (
-            <Post {...post} feedType="recents" />
-          ))}
-        </section>
+        <FeedSection feedType="recents" />
       </MainLayout>
     </>
   );
