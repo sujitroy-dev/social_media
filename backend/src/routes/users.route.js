@@ -3,6 +3,7 @@ const router = express.Router();
 import {
   registerUser,
   login,
+  refreshToken,
   getAllUsers,
   getUserById,
   udpateUserById,
@@ -303,5 +304,7 @@ router.patch("/update-profile", authorize, udpateUserById);
  *               $ref: '#/components/schemas/ServerError'
  */
 router.post("/login", login);
+
+router.post("/refresh-token", refreshToken);
 
 export default router;

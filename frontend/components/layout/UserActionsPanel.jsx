@@ -31,7 +31,9 @@ export default function UserActionsPanel() {
           alt=""
           loading="eager"
         />
-        <Typography variant="h6">Bogdan Nikitin</Typography>
+        <Typography variant="h6" className="capitalize">
+          {session?.user.name}
+        </Typography>
         <Typography variant="p" color="gray" className="font-medium">
           @bogdannikitin
         </Typography>

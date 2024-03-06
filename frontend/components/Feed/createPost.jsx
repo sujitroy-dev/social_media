@@ -15,7 +15,6 @@ export default function CreatePost() {
     event.target.style.height = event.target.scrollHeight + "px";
   };
   const { data: session } = useSession({});
-  console.log(session?.user);
 
   return (
     <section className="border-x border-t border-gray-200 p-8 bg-gray-50 rounded-t-sm">
@@ -33,16 +32,14 @@ export default function CreatePost() {
         ) : (
           <NameAvatar name={session?.user.name} rounded="md" />
         )}
-
         <textarea
           class="block w-full text-base resize-none focus:outline-none no-scrollbar flex-1"
           placeholder="Share something..."
           onChange={handleTextChange}
           onFocus={() => setIsInputFocus(true)}
           onBlur={() => setIsInputFocus(false)}
-        >
-          {text}
-        </textarea>
+          defaultValue={text}
+        />
       </div>
       <div className="flex justify-between items-center">
         <div className="">

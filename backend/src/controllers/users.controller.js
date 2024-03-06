@@ -195,32 +195,23 @@ export const login = async (req, res) => {
     }
     const userDetails = row[0];
 
-    delete userDetails.hashPassword;
-    const token = await jwt.sign(
+    await delete userDetails.hashPassword;
+
+    const accessToken = await jwt.sign(
+      { user_id, username, email },
+      process.env.SECRET_KEY,
       {
-        ...userDetails,
-        role: "user",
-      },
+        expiresIn: "15m",
+      }
+    );
+    const refreshToken = await jwt.sign(
+      { user_id, username, email },
       process.env.SECRET_KEY,
       { expiresIn: "28d" }
     );
-
-    // store the token for token validation
-    const STORE_TOKEN_QUERY = `
-    INSERT INTO token (token)
-    VALUES(?)`;
-    const [STORE_TOKEN_RESPONSE] = await connection.query(
-      STORE_TOKEN_QUERY,
-      token
-    );
-    if (STORE_TOKEN_RESPONSE.affectedRows === 0) {
-      res.status(400).json({ message: "Failed to save the token, try again." });
-      return;
-    }
-
     await connection.commit();
 
-    res.cookie("token", token, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 365 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: false, // Set to true if your app is served over HTTPS
@@ -230,7 +221,8 @@ export const login = async (req, res) => {
       email: userDetails.email,
       username: userDetails.username,
       profilePicture: userDetails.profilePicture,
-      token,
+      accessToken,
+      refreshToken,
     });
     return;
   } catch (error) {
@@ -243,5 +235,33 @@ export const login = async (req, res) => {
     if (connection) {
       connection.release();
     }
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    return res.status(401).json({ message: "Refresh token is required" });
+  }
+
+  try {
+    // Verify refresh token
+    const { user_id, username, email } = await jwt.verify(
+      refreshToken,
+      JWT_SECRET
+    );
+
+    // Generate new access token
+    const accessToken = await jwt.sign(
+      { user_id, username, email },
+      JWT_SECRET,
+      {
+        expiresIn: "15m",
+      }
+    );
+
+    res.json({ accessToken });
+  } catch (err) {
+    res.status(403).json({ message: "Invalid refresh token" });
   }
 };
