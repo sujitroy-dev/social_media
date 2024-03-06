@@ -7,6 +7,8 @@ import {
   newPost,
   updatePost,
 } from "../controllers/post.controller.js";
+import { newLike, disLike } from "../controllers/like.controller.js";
+
 import { authorize } from "../middleware/authorize.js";
 const router = express.Router();
 
@@ -349,5 +351,9 @@ router.delete("/:id", authorize, deletePost);
  *               $ref: '#/components/schemas/ServerError'
  */
 router.delete("/asset/:assetId", deletePostAsset);
+
+router.post("/like", authorize, newLike);
+
+router.delete("/dislike", authorize, disLike);
 
 export default router;
