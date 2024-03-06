@@ -198,7 +198,7 @@ export const login = async (req, res) => {
 
     await delete userDetails.hashPassword;
 
-    const { accessToken, refreshToken } = await generateTokens();
+    const { accessToken, refreshToken } = await generateTokens(userDetails);
     await connection.commit();
 
     res.cookie("accessToken", accessToken, {
