@@ -2,7 +2,7 @@
 import React from "react";
 import UserActionsPanel from "@/components/layout/UserActionsPanel";
 import AdditionalContentPanel from "@/components/layout/AdditionalContentPanel";
-import HeaderFeed from "./Header";
+import HeaderFeed from "@/components/Feed/Header";
 
 export default function MainLayout({ children }) {
   return (
