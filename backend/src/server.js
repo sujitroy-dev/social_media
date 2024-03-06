@@ -7,8 +7,13 @@ import postRouter from "./routes/post.route.js";
 import commentRouter from "./routes/comment.route.js";
 import cookieParser from "cookie-parser";
 const app = express();
-
 dotenv.config();
+
+if (!(process.env.PORT && process.env.CLIENT_ORIGIN_URL)) {
+  throw new Error(
+    "Missing required environment variables. Check docs for more info."
+  );
+}
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
