@@ -4,8 +4,8 @@ use `social-media`
 -- create user table
 CREATE TABLE IF NOT EXISTS user (
   `user_id` integer auto_increment primary key,
-  `email` varchar(50),
-  `username` varchar(100),
+  `email` varchar(50) UNIQUE,
+  `username` varchar(100) UNIQUE,
   `first_name` varchar(100),
   `last_name` varchar(100),
   `password` varchar(100),
@@ -72,6 +72,8 @@ CREATE TABLE IF NOT EXISTS following (
 );
 
 CREATE TABLE IF NOT EXISTS token (
-  `token` VARCHAR(250) PRIMARY KEY,
+  `token` VARCHAR(250) PRIMARY KEY NOT NULL,
+  `user_id` INTEGER NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   FOREIGN KEY (user_id) REFERENCES user(user_id),
 )
