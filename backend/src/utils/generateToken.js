@@ -1,7 +1,7 @@
 import pool from "../config/database.js";
 import jwt from "jsonwebtoken";
 
-export default generateTokens = async (user) => {
+export const generateTokens = async (user) => {
   const { user_id, username, email } = user;
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
   let connection;

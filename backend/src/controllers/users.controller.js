@@ -1,7 +1,10 @@
 import pool from "../config/database.js";
-import { comparePassword, hashPassword } from "../utils";
+import {
+  comparePassword,
+  hashPassword,
+  generateTokens,
+} from "../utils/index.js";
 import jwt from "jsonwebtoken";
-import generateTokens from "../utils";
 
 // Get all users
 export const getAllUsers = async (req, res) => {
