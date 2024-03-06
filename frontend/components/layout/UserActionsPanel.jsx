@@ -2,9 +2,6 @@ import React from "react";
 import {
   Typography,
   Avatar,
-  Accordion,
-  AccordionHeader,
-  AccordionBody,
   Chip,
   List,
   ListItem,
@@ -19,17 +16,20 @@ import {
   ChatBubbleOvalLeftIcon,
   HomeIcon,
 } from "@heroicons/react/24/solid";
-import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 export default function UserActionsPanel() {
+  const { data: session } = useSession({});
   return (
     <aside className="w-72 p-8">
       <div className="flex flex-col items-center">
         <Avatar
-          src="https://docs.material-tailwind.com/img/face-2.jpg"
+          src={session?.user.image}
           size="xxl"
           className="mb-3"
           alt=""
+          loading="eager"
         />
         <Typography variant="h6">Bogdan Nikitin</Typography>
         <Typography variant="p" color="gray" className="font-medium">
@@ -79,7 +79,7 @@ export default function UserActionsPanel() {
           </ListItemPrefix>
           Profile
         </ListItem>
-        <ListItem>
+        <ListItem onClick={signOut}>
           <ListItemPrefix>
             <PowerIcon className="h-5 w-5" />
           </ListItemPrefix>
