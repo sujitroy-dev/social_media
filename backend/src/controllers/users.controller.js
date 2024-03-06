@@ -1,6 +1,7 @@
 import pool from "../config/database.js";
-import { comparePassword, hashPassword } from "../helper/authHelper.js";
+import { comparePassword, hashPassword } from "../utils";
 import jwt from "jsonwebtoken";
+import generateTokens from "../utils";
 
 // Get all users
 export const getAllUsers = async (req, res) => {
@@ -197,18 +198,7 @@ export const login = async (req, res) => {
 
     await delete userDetails.hashPassword;
 
-    const accessToken = await jwt.sign(
-      { user_id, username, email },
-      process.env.SECRET_KEY,
-      {
-        expiresIn: "15m",
-      }
-    );
-    const refreshToken = await jwt.sign(
-      { user_id, username, email },
-      process.env.SECRET_KEY,
-      { expiresIn: "28d" }
-    );
+    const { accessToken, refreshToken } = await generateTokens();
     await connection.commit();
 
     res.cookie("accessToken", accessToken, {
