@@ -1,6 +1,10 @@
 import express from "express";
 const router = express.Router();
-import { authEmail, googleRedirect } from "../controllers/auth.controller.js";
+import {
+  authEmail,
+  githubRedirect,
+  googleRedirect,
+} from "../controllers/auth.controller.js";
 import passport from "passport";
 
 router.post("/email", authEmail);
@@ -13,12 +17,24 @@ router.get(
     session: false,
   })
 );
+router.get(
+  "/github",
+  passport.authenticate("github", {
+    scope: ["user:email"],
+    session: false,
+  })
+);
 
 // Oauth user data comes to these redirectURLs
 router.get(
   "/google/callback",
   passport.authenticate("google", { session: false }),
   googleRedirect
+);
+router.get(
+  "/github/callback",
+  passport.authenticate("github", { session: false }),
+  githubRedirect
 );
 
 // This url will only open, if the user is signed in

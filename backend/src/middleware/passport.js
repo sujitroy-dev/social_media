@@ -1,6 +1,7 @@
 import express from "express";
 import { Strategy as JwtStrategy } from "passport-jwt";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as GitHubStrategy } from "passport-github2";
 import passport from "passport";
 import dotenv from "dotenv";
 dotenv.config();
@@ -68,6 +69,18 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `${process.env.API_BASE_URL}/auth/google/callback`,
+    },
+    function (accessToken, refreshToken, profile, done) {
+      return done(null, { ...profile, accessToken });
+    }
+  )
+);
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: `${process.env.API_BASE_URL}/auth/github/callback`,
     },
     function (accessToken, refreshToken, profile, done) {
       return done(null, { ...profile, accessToken });
