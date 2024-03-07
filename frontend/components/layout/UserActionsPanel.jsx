@@ -16,6 +16,7 @@ import {
   ChatBubbleOvalLeftIcon,
   HomeIcon,
 } from "@heroicons/react/24/solid";
+import { logout } from "@/utils/auth";
 
 export default function UserActionsPanel() {
   return (
@@ -78,7 +79,7 @@ export default function UserActionsPanel() {
           </ListItemPrefix>
           Profile
         </ListItem>
-        <ListItem>
+        <ListItem onClick={logout}>
           <ListItemPrefix>
             <PowerIcon className="h-5 w-5" />
           </ListItemPrefix>

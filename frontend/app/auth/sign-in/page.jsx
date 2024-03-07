@@ -1,4 +1,5 @@
 "use client";
+import { githubSingin, googleSingin } from "@/utils/auth";
 import { Input, Checkbox, Button, Typography } from "@material-tailwind/react";
 import Link from "next/link";
 
@@ -61,6 +62,7 @@ export function SignIn() {
               color="white"
               className="flex items-center gap-2 justify-center shadow-md"
               fullWidth
+              onClick={googleSingin}
             >
               <img src="/img/logo/google.svg" height={20} width={20} alt="" />
               <span>Sign in With Google</span>
@@ -70,6 +72,7 @@ export function SignIn() {
               color="white"
               className="flex items-center gap-2 justify-center shadow-md"
               fullWidth
+              onClick={githubSingin}
             >
               <img src="/img/logo/github.svg" height={20} width={20} alt="" />
               <span>Sign in With GitHub</span>
