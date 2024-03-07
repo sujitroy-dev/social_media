@@ -16,23 +16,20 @@ import {
   ChatBubbleOvalLeftIcon,
   HomeIcon,
 } from "@heroicons/react/24/solid";
-import { useSession } from "next-auth/react";
-import { signOut } from "next-auth/react";
 
 export default function UserActionsPanel() {
-  const { data: session } = useSession({});
   return (
     <aside className="w-72 p-8">
       <div className="flex flex-col items-center">
         <Avatar
-          src={session?.user.image}
+          src="https://docs.material-tailwind.com/img/face-2.jpg"
           size="xxl"
           className="mb-3"
           alt=""
           loading="eager"
         />
         <Typography variant="h6" className="capitalize">
-          {session?.user.name}
+          Sujit Roy
         </Typography>
         <Typography variant="p" color="gray" className="font-medium">
           @bogdannikitin
@@ -81,7 +78,7 @@ export default function UserActionsPanel() {
           </ListItemPrefix>
           Profile
         </ListItem>
-        <ListItem onClick={signOut}>
+        <ListItem>
           <ListItemPrefix>
             <PowerIcon className="h-5 w-5" />
           </ListItemPrefix>

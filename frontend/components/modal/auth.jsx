@@ -1,9 +1,8 @@
 "use client";
-import { Button, Dialog, Typography, Input } from "@material-tailwind/react";
-import React, { useState } from "react";
+import { Button, Dialog, Typography } from "@material-tailwind/react";
+import React from "react";
 import Icon from "../icons";
 import { useSelector } from "react-redux";
-import { signIn } from "next-auth/react";
 
 export default function AuthForm({ closeModal }) {
   const isModalOpen = !useSelector((state) => state.user.loggedIn);
@@ -41,7 +40,6 @@ function LoginOptions() {
         color="white"
         className="flex items-center gap-2 justify-center shadow-md"
         fullWidth
-        onClick={() => signIn("google", { callbackUrl: "/feed" })}
       >
         <Icon.Google />
         <span>Sign in With Google</span>
@@ -51,7 +49,6 @@ function LoginOptions() {
         color="white"
         className="flex items-center gap-2 justify-center shadow-md"
         fullWidth
-        onClick={() => signIn("twitter", { callbackUrl: "/feed" })}
       >
         <Icon.Twitter />
         <span>Sign in With Twitter</span>

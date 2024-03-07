@@ -3,7 +3,6 @@ import { PhotoIcon } from "@heroicons/react/24/outline";
 import { Avatar, Button, IconButton, Tooltip } from "@material-tailwind/react";
 import React, { useState } from "react";
 import NameAvatar from "../NameAvatar";
-import { useSession } from "next-auth/react";
 
 export default function CreatePost() {
   const [text, setText] = useState("");
@@ -14,23 +13,22 @@ export default function CreatePost() {
     event.target.style.height = "auto";
     event.target.style.height = event.target.scrollHeight + "px";
   };
-  const { data: session } = useSession({});
 
   return (
     <section className="border-x border-t border-gray-200 p-8 bg-gray-50 rounded-t-sm">
       <div
         className={`p-2 rounded-md bg-white mb-4 border-2 ${isInputFocus ? "border-gray-800 shadow-sm" : "border-gray-300"} flex gap-2`}
       >
-        {session?.user.image ? (
+        {true ? (
           <Avatar
-            src={session?.user.image}
+            src="https://docs.material-tailwind.com/img/face-2.jpg"
             alt="avatar"
             size="md"
             variant="rounded"
             loading="eager"
           />
         ) : (
-          <NameAvatar name={session?.user.name} rounded="md" />
+          <NameAvatar name="Sujit Roy" rounded="md" />
         )}
         <textarea
           class="block w-full text-base resize-none focus:outline-none no-scrollbar flex-1"
