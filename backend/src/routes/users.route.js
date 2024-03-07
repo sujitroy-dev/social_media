@@ -8,7 +8,7 @@ import {
   getUserById,
   udpateUserById,
 } from "../controllers/users.controller.js";
-import { authorize } from "../middleware/authorize.js";
+import { jwtAuthenticate } from "../middleware/index.js";
 
 /**
  * @swagger
@@ -254,7 +254,7 @@ router.post("/register", registerUser);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.patch("/update-profile", authorize, udpateUserById);
+router.patch("/update-profile", jwtAuthenticate, udpateUserById);
 
 /**
  * @swagger

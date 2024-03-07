@@ -1,11 +1,11 @@
 import express from "express";
 import {
-    deleteComment,
-    newComment,
-    updateComment,
-    viewAllComments,
+  deleteComment,
+  newComment,
+  updateComment,
+  viewAllComments,
 } from "../controllers/comment.controller.js";
-import {authorize} from '../middleware/authorize.js'
+import { jwtAuthenticate } from "../middleware/index.js";
 const router = express.Router();
 
 /**
@@ -126,7 +126,7 @@ router.get("/all", viewAllComments);
  *               $ref: '#/components/schemas/ServerError'
  */
 
-router.post("/new", authorize, newComment);
+router.post("/new", jwtAuthenticate, newComment);
 
 /**
  * @swagger
@@ -177,7 +177,7 @@ router.post("/new", authorize, newComment);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.patch("/update/:id", authorize, updateComment);
+router.patch("/update/:id", jwtAuthenticate, updateComment);
 
 /**
  * @swagger
@@ -218,6 +218,6 @@ router.patch("/update/:id", authorize, updateComment);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.delete("/:id", authorize, deleteComment);
+router.delete("/:id", jwtAuthenticate, deleteComment);
 
 export default router;

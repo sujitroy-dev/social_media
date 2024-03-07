@@ -9,7 +9,7 @@ import {
 } from "../controllers/post.controller.js";
 import { newLike, disLike } from "../controllers/like.controller.js";
 
-import { authorize } from "../middleware/authorize.js";
+import { jwtAuthenticate } from "../middleware/index.js";
 const router = express.Router();
 
 /**
@@ -307,7 +307,7 @@ router.get("/", getFeedPosts);
  *             schema:
  *               $ref: '#/components/schemas/ServerError'
  */
-router.delete("/:id", authorize, deletePost);
+router.delete("/:id", jwtAuthenticate, deletePost);
 
 /**
  * @swagger
@@ -352,8 +352,8 @@ router.delete("/:id", authorize, deletePost);
  */
 router.delete("/asset/:assetId", deletePostAsset);
 
-router.post("/like", authorize, newLike);
+router.post("/like", jwtAuthenticate, newLike);
 
-router.delete("/dislike", authorize, disLike);
+router.delete("/dislike", jwtAuthenticate, disLike);
 
 export default router;
