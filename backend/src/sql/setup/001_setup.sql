@@ -3,22 +3,23 @@ use `social-media`
 
 -- create user table
 CREATE TABLE IF NOT EXISTS user (
-  `user_id` integer auto_increment primary key,
-  `email` varchar(50) UNIQUE,
-  `username` varchar(100) UNIQUE,
-  `first_name` varchar(100),
-  `last_name` varchar(100),
-  `password` varchar(100),
-  `profile_picture` varchar(100),
+  `user_id` INTEGER AUTO_INCREMENT PRIMARY KEY,
+  `email` VARCHAR(50) UNIQUE NOT NULL,
+  `username` VARCHAR(100) UNIQUE NOT NULL,
+  `first_name` VARCHAR(100) NOT NULL,
+  `last_name` VARCHAR(100) NOT NULL,
+  `provider` ENUM("email","google","github") NOT NULL,
+  `password` VARCHAR(100),
+  `profile_picture` VARCHAR(100),
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- -- create post table
 CREATE TABLE IF NOT EXISTS post (
-  `post_id` integer auto_increment primary key,
-  `user_id` integer,
-  `content` longtext,
+  `post_id` INTEGER AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INTEGER NOT NULL,
+  `content` LONGTEXT,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    FOREIGN KEY (user_id) REFERENCES user(user_id)
@@ -26,10 +27,10 @@ CREATE TABLE IF NOT EXISTS post (
 
 -- -- create post_asset table
 CREATE TABLE IF NOT EXISTS post_asset (
-  `post_asset_id` INTEGER auto_increment primary key,
-  `post_id` INTEGER,
-  `url` VARCHAR(100),
-  `type` ENUM("image", "video"),
+  `post_asset_id` INTEGER AUTO_INCREMENT PRIMARY KEY,
+  `post_id` INTEGER NOT NULL,
+  `url` VARCHAR(100) NOT NULL,
+  `type` ENUM("image", "video") NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    FOREIGN KEY (post_id) REFERENCES post(post_id)
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS post_asset (
 
 -- create like tables
 CREATE TABLE IF NOT EXISTS `like` (
-  `like_id` INTEGER auto_increment PRIMARY KEY,
+  `like_id` INTEGER AUTO_INCREMENT PRIMARY KEY,
   `user_id` INTEGER NOT NULL,
   `post_id` INTEGER NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -47,11 +48,11 @@ CREATE TABLE IF NOT EXISTS `like` (
 
 -- create comment tables
 CREATE TABLE IF NOT EXISTS comment (
-  `comment_id` INTEGER auto_increment PRIMARY KEY,
+  `comment_id` INTEGER AUTO_INCREMENT PRIMARY KEY,
   `user_id` INTEGER NOT NULL,
   `post_id` INTEGER NOT NULL,
   `parent_comment_id` INTEGER,
-  `content` longtext,
+  `content` longtext NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    FOREIGN KEY (user_id) REFERENCES user(user_id),
@@ -61,10 +62,10 @@ CREATE TABLE IF NOT EXISTS comment (
 
 -- create friendship table
 CREATE TABLE IF NOT EXISTS following (
-  `following_id` integer auto_increment primary key,
-  `following_user_id` integer,
-  `followed_user_id` integer,
-  `status` enum('pending','accepted'),
+  `following_id` INTEGER AUTO_INCREMENT PRIMARY KEY,
+  `following_user_id` INTEGER NOT NULL,
+  `followed_user_id` INTEGER NOT NULL,
+  `status` ENUM('pending','accepted'),
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    FOREIGN KEY (following_user_id) REFERENCES user(user_id),
