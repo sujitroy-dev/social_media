@@ -1,11 +1,12 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import { specs, swaggerUi } from "./config/swagger.js";
 import usersRouter from "./routes/users.route.js";
 import postRouter from "./routes/post.route.js";
 import commentRouter from "./routes/comment.route.js";
-import cookieParser from "cookie-parser";
+import authRouter from "./routes/auth.route.js";
 
 const app = express();
 dotenv.config();
@@ -35,6 +36,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/api/users", usersRouter);
 app.use("/api/post", postRouter);
 app.use("/api/comment", commentRouter);
+app.use("/api/auth", authRouter);
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
