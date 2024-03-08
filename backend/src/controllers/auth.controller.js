@@ -2,11 +2,72 @@ import jwt from "jsonwebtoken";
 import pool from "../config/database.js";
 
 export const authEmail = async (req, res) => {
-  const credentials = {
-    email: req.body.email,
-    password: req.body.password,
-    provider: "email",
-  };
+  const { first_name, last_name, username, email, password } = req.body;
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const GET_USER_QUERY = `SELECT email FROM user WHERE email = ? OR username = ?`;
+    let [GET_USER_RESPONSE] = await connection.query(GET_USER_QUERY, [
+      email,
+      username,
+    ]);
+    GET_USER_RESPONSE = GET_USER_RESPONSE[0];
+
+    if (GET_USER_RESPONSE) {
+      return res.status(409).json({
+        success: false,
+        message: "Invalid credentials",
+        error:
+          email === GET_USER_RESPONSE.email
+            ? "Duplicate email"
+            : "Duplicate username",
+      });
+    }
+
+    const INSERT_USER_QUERY = `INSERT INTO user
+    (first_name, last_name, username, email, password, provider)
+    VALUES(?, ?, ?, ?, ?, "email")`;
+    let INSERT_USER_RESPONSE = await connection.query(INSERT_USER_QUERY, [
+      first_name,
+      last_name,
+      username,
+      email,
+      password,
+    ]);
+    INSERT_USER_RESPONSE = INSERT_USER_RESPONSE[0];
+    await connection.commit();
+
+    if (INSERT_USER_RESPONSE.affectedRows) {
+      res.status(201).json({
+        success: true,
+        user: {
+          id: INSERT_USER_RESPONSE.insertId,
+          first_name,
+          last_name,
+          username,
+          email,
+          provider,
+        },
+      });
+      return;
+    }
+
+    throw new Error({ message: "Database error" });
+  } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+
   // if credentials are valid return token(28d)
   // else return error
 };

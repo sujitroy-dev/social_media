@@ -6,8 +6,10 @@ import {
   googleRedirect,
 } from "../controllers/auth.controller.js";
 import passport from "passport";
+import { validateRequest } from "../middleware/index.js";
+import { createUserSchema } from "../schemas/user/index.js";
 
-router.post("/email", authEmail);
+router.post("/email", validateRequest(createUserSchema), authEmail);
 
 // OAuth Authentication, Just going to this URL will open OAuth screens
 router.get(
